@@ -2675,7 +2675,7 @@ static void __init msm8x60_init_dsps(void)
 #define MSM_PMEM_SF_SIZE			0x2000000 /* 32 Mbytes */
 #define MSM_OVERLAY_BLT_SIZE   roundup(960 * ALIGN(540, 32) * 3 * 2, 4096)
 
-#define MSM_PMEM_ADSP_SIZE		  0x2F00000
+#define MSM_PMEM_ADSP_SIZE		0x2F00000
 #define MSM_PMEM_AUDIO_SIZE		 0x239000
 #define MSM_PMEM_TZCOM_SIZE			0xC7000
 
