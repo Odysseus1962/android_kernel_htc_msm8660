@@ -542,7 +542,7 @@ static struct regulator_init_data saw_s0_init_data = {
 		.constraints = {
 			.name = "8901_s0",
 			.valid_ops_mask = REGULATOR_CHANGE_VOLTAGE,
-			.min_uV = 700000
+			.min_uV = 700000,
 			.max_uV = 1450000,
 		},
 		.consumer_supplies = vreg_consumers_8901_S0,
