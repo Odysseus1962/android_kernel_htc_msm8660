@@ -248,6 +248,18 @@ static int gpio_event_probe(struct platform_device *pdev)
 #if defined (CONFIG_MACH_SHOOTER_U)
 		if (!strcmp(input_dev->name, "shooteru-keypad")) {
 #endif
+#if defined  (CONFIG_MACH_RUBY)
+		if (!strcmp(input_dev->name, "ruby-keypad")) {
+#endif
+#if defined  (CONFIG_MACH_PYRAMID)
+                if (!strcmp(input_dev->name, "pyramid-keypad")) {
+#endif
+#if defined  (CONFIG_MACH_DOUBLESHOT)
+                if (!strcmp(input_dev->name, "doubleshot-keypad")) {
+#endif
+#if defined  (CONFIG_MACH_HOLIDAY)
+                if (!strcmp(input_dev->name, "holiday-keypad")) {
+#endif
 			sweep2wake_setdev(input_dev);
 			printk(KERN_INFO "[SWEEP2WAKE]: set device %s\n", input_dev->name);
 		}
