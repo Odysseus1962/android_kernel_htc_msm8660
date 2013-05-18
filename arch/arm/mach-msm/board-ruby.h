@@ -102,7 +102,12 @@ extern void sii9234_change_usb_owner(bool bMHL);
 
 /* Cable detect */
 #define RUBY_GPIO_MHL_USB_SEL		(1)
-#define RUBY_GPIO_USB_ID			(63)
+#define RUBY_GPIO_MHL_WAKE_UP        (62)
+#define RUBY_GPIO_USB_ID        (63)
+#define RUBY_GPIO_MHL_RESET        (70)
+#define RUBY_GPIO_MHL_INT        (71)
+#define RUBY_GPIO_MHL_USB_SWITCH        (99)
+#define RUBY_GPIO_MHL_USB_EN         (139)
 
 /* Camera */
 #define RUBY_CAM_I2C_SDA             (47)
