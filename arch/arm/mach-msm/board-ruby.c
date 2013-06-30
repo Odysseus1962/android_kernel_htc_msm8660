@@ -2687,6 +2687,8 @@ static void __init msm8x60_init_dsps(void)
 #define USER_SMI_SIZE			   	(MSM_SMI_SIZE - KERNEL_SMI_SIZE)
 #define MSM_PMEM_SMIPOOL_BASE	   		USER_SMI_BASE
 #define MSM_PMEM_SMIPOOL_SIZE	   		USER_SMI_SIZE
+#define MSM_OVERLAY_BLT_SIZE   roundup(960 * ALIGN(540, 32) * 3 * 2, 4096)
+#define MSM_OVERLAY_BLT_BASE    (MSM_PMEM_TZCOM_BASE + MSM_PMEM_TZCOM_SIZE)
 
 static unsigned fb_size;
 static int __init fb_size_setup(char *p)
