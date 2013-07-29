@@ -45,7 +45,7 @@
 #include <linux/i2c.h>
 #include <linux/i2c/sx150x.h>
 #include <linux/smsc911x.h>
-#include <linux/spi.h>
+#include <linux/spi/spi.h>
 #include <linux/input/tdisc_shinetsu.h>
 #include <linux/i2c/isa1200.h>
 #include <linux/dma-mapping.h>
