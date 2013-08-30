@@ -1,10 +1,14 @@
 #
 # Automatically generated make config: don't edit
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Linux/arm 3.0.53 Kernel Configuration
 =======
 # Linux/arm 3.0.93 Kernel Configuration
 >>>>>>> c149c6f... Patch: Linux Kernel to 3.0.92-3.0.93
+=======
+# Linux/arm 3.0.94 Kernel Configuration
+>>>>>>> 2a3346d... Patch: Linux kernel to 3.0.94
 #
 CONFIG_ARM=y
 CONFIG_SYS_SUPPORTS_APM_EMULATION=y
