@@ -2643,6 +2643,7 @@ static void __init msm8x60_init_dsps(void)
 }
 #endif /* CONFIG_MSM_DSPS */
 
+
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
 #define MSM_FB_PRIM_BUF_SIZE (roundup((960 * 540 * 4), 4096) * 3) /* 4 bpp x 3 pages */
 #else
@@ -2655,40 +2656,36 @@ static void __init msm8x60_init_dsps(void)
 #define MSM_FB_EXT_BUFT_SIZE    0
 #endif
 
-#ifdef CONFIG_FB_MSM_OVERLAY_WRITEBACK
-/* width x height x 3 bpp x 2 frame buffer */
-#define MSM_FB_WRITEBACK_SIZE roundup(960 * ALIGN(540, 32) * 3 * 2, 4096)
-#define MSM_FB_WRITEBACK_OFFSET 0
-#else
-#define MSM_FB_WRITEBACK_SIZE   0
-#define MSM_FB_WRITEBACK_OFFSET 0
-#endif
-
 /* Note: must be multiple of 4096 */
 #define MSM_FB_SIZE roundup(MSM_FB_PRIM_BUF_SIZE + MSM_FB_EXT_BUF_SIZE, 4096)
 
 #define MSM_PMEM_SF_SIZE			0x4000000 /* 64 Mbytes */
-#define MSM_PMEM_ADSP_SIZE			0x1CB0000
-#define MSM_PMEM_ADSP2_SIZE			0 /* ((1408 * 792 * 1.5) Align 2K) * 2 * 2 */
-#define MSM_PMEM_AUDIO_SIZE			0x239000
-#define MSM_PMEM_SF_BASE			(0x40400000)
-#define MSM_FB_BASE			        (0x80000000 - MSM_FB_SIZE)
-#define MSM_PMEM_ADSP2_BASE			(MSM_FB_BASE - MSM_PMEM_ADSP2_SIZE)
-#define MSM_PMEM_ADSP_BASE		        (MSM_PMEM_ADSP2_BASE - MSM_PMEM_ADSP_SIZE)
-#define MSM_FB_WRITEBACK_BASE			(MSM_PMEM_SF_BASE + MSM_PMEM_SF_SIZE)
-#define MSM_PMEM_AUDIO_BASE			(MSM_FB_WRITEBACK_BASE + MSM_FB_WRITEBACK_SIZE)
+
+#define MSM_PMEM_ADSP_SIZE		  	0x239C000
+#define MSM_PMEM_AUDIO_SIZE		 	0x239000
+
+#define MSM_PMEM_SF_BASE			(MSM_FB_BASE - MSM_PMEM_SF_SIZE)
+#define MSM_FB_BASE				(0x80000000 - MSM_FB_SIZE)
+#define MSM_PMEM_ADSP_BASE			(0x40400000)
+#define MSM_PMEM_AUDIO_BASE			(MSM_PMEM_ADSP_BASE + MSM_PMEM_ADSP_SIZE)
+
 #define MSM_SMI_BASE				0x38000000
 #define MSM_SMI_SIZE				0x4000000
+
+/* Kernel SMI PMEM Region for video core, used for Firmware */
+/* and encoder, decoder scratch buffers */
+/* Kernel SMI PMEM Region Should always precede the user space */
+/* SMI PMEM Region, as the video core will use offset address */
+/* from the Firmware base */
 #define KERNEL_SMI_BASE			 	(MSM_SMI_BASE)
 #define KERNEL_SMI_SIZE			 	0x400000
+
+/* User space SMI PMEM Region for video core*/
+/* used for encoder, decoder input & output buffers  */
 #define USER_SMI_BASE			   	(KERNEL_SMI_BASE + KERNEL_SMI_SIZE)
 #define USER_SMI_SIZE			   	(MSM_SMI_SIZE - KERNEL_SMI_SIZE)
 #define MSM_PMEM_SMIPOOL_BASE	   		USER_SMI_BASE
 #define MSM_PMEM_SMIPOOL_SIZE	   		USER_SMI_SIZE
-#define MSM_OVERLAY_BLT_SIZE   roundup(960 * ALIGN(540, 32) * 3 * 2, 4096)
-#define MSM_PMEM_TZCOM_SIZE			0xC7000
-#define MSM_PMEM_TZCOM_BASE			(MSM_PMEM_SF_BASE + MSM_PMEM_SF_SIZE)
-#define MSM_OVERLAY_BLT_BASE    (MSM_PMEM_TZCOM_BASE + MSM_PMEM_TZCOM_SIZE)
 
 static unsigned fb_size;
 static int __init fb_size_setup(char *p)
@@ -2887,13 +2884,7 @@ static void __init msm8x60_allocate_memory_regions(void)
 		size, __va(msm_fb_resources[0].start),
 		(unsigned long)msm_fb_resources[0].start);
 
-	msm_fb_resources[1].start = MSM_OVERLAY_BLT_BASE;
-	msm_fb_resources[1].end = msm_fb_resources[1].start +
-		MSM_OVERLAY_BLT_SIZE - 1;
-	pr_info("allocating %lu bytes at %p (%lx physical) for "
-		"overlay write back\n", (unsigned long)MSM_OVERLAY_BLT_SIZE,
-		__va(msm_fb_resources[1].start),
-		(unsigned long)msm_fb_resources[1].start);
+
 }
 
 
@@ -7176,12 +7167,6 @@ static struct memtype_reserve msm8x60_reserve_table[] __initdata = {
 	[MEMTYPE_EBI0] = {
 		.flags	=	MEMTYPE_FLAGS_1M_ALIGN,
 	},
-	[MEMTYPE_EBI1] = {
-		.start	=	MSM_PMEM_TZCOM_BASE,
-		.limit	=	MSM_PMEM_TZCOM_SIZE,
-		.size	=	MSM_PMEM_TZCOM_SIZE,
-		.flags	=	MEMTYPE_FLAGS_FIXED,
-	},
 };
 
 static void __init size_pmem_device(struct android_pmem_platform_data *pdata, unsigned long start, unsigned long size)
@@ -7574,11 +7559,8 @@ static void __init ruby_init(void)
 
 /* PHY_BASE_ADDR1 should be 8 MB alignment */
 /* 0x48000000~0x48700000 is reserved for Ruby 8K AMSS */
-#define PHY_BASE_ADDR1  0x48000000
-/* 0x40400000~0x42A00000 is 38MB for SF/AUDIO/FB PMEM */
-/* 0x48800000~0x7CD00000 is 837MB for APP */
-/* 0x7DC00000~0x80000000 is 51MB for ADSP PMEM */
-#define SIZE_ADDR1	  0x35100000
+#define PHY_BASE_ADDR1  		0x48000000
+#define SIZE_ADDR1	  		0x32900000
 
 static void __init ruby_fixup(struct machine_desc *desc, struct tag *tags,
 				 char **cmdline, struct meminfo *mi)
