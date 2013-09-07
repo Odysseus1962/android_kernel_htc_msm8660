@@ -1,6 +1,10 @@
 #
 # Automatically generated make config: don't edit
+<<<<<<< HEAD
 # Linux/arm 3.0.53 Kernel Configuration
+=======
+# Linux/arm 3.0.94 Kernel Configuration
+>>>>>>> 6337b40... shooter: defconfig name change
 #
 CONFIG_ARM=y
 CONFIG_SYS_SUPPORTS_APM_EMULATION=y
@@ -35,7 +39,11 @@ CONFIG_HAVE_IRQ_WORK=y
 CONFIG_EXPERIMENTAL=y
 CONFIG_INIT_ENV_ARG_LIMIT=32
 CONFIG_CROSS_COMPILE=""
+<<<<<<< HEAD
 CONFIG_LOCALVERSION=""
+=======
+CONFIG_LOCALVERSION="-CM"
+>>>>>>> 6337b40... shooter: defconfig name change
 CONFIG_LOCALVERSION_AUTO=y
 CONFIG_HAVE_KERNEL_GZIP=y
 CONFIG_HAVE_KERNEL_LZMA=y
