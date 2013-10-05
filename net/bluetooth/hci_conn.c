@@ -1,6 +1,7 @@
 /*
    BlueZ - Bluetooth protocol stack for Linux
-   Copyright (c) 2000-2001, 2010-2012 Code Aurora Forum.  All rights reserved.
+   Copyright (c) 2000-2001, The Linux Foundation. All rights reserved.
+   Copyright (c) 2010-2013, The Linux Foundation. All rights reserved.
 
    Written 2000,2001 by Maxim Krasnyansky <maxk@qualcomm.com>
 
@@ -121,6 +122,83 @@ static void hci_le_connect_cancel(struct hci_conn *conn)
 	hci_send_cmd(conn->hdev, HCI_OP_LE_CREATE_CONN_CANCEL, 0, NULL);
 }
 
+<<<<<<< HEAD
+=======
+void hci_le_cancel_create_connect(struct hci_dev *hdev, bdaddr_t *dst)
+{
+	struct hci_conn *le;
+
+	BT_DBG("%p", hdev);
+
+	le = hci_conn_hash_lookup_ba(hdev, LE_LINK, dst);
+	if (le) {
+		BT_DBG("send hci connect cancel");
+		hci_le_connect_cancel(le);
+		hci_conn_del(le);
+	}
+}
+EXPORT_SYMBOL(hci_le_cancel_create_connect);
+
+void hci_le_add_dev_white_list(struct hci_dev *hdev, bdaddr_t *dst)
+{
+	struct hci_cp_le_add_dev_white_list cp;
+	struct adv_entry *entry;
+	struct link_key *key;
+
+	BT_DBG("%p", hdev);
+
+	memset(&cp, 0, sizeof(cp));
+	bacpy(&cp.addr, dst);
+
+	key = hci_find_link_key_type(hdev, dst, KEY_TYPE_LTK);
+	if (!key) {
+		entry = hci_find_adv_entry(hdev, dst);
+		if (entry)
+			cp.addr_type = entry->bdaddr_type;
+		else
+			cp.addr_type = 0x00;
+	} else {
+		cp.addr_type = key->addr_type;
+	}
+
+	hci_send_cmd(hdev, HCI_OP_LE_ADD_DEV_WHITE_LIST, sizeof(cp), &cp);
+}
+EXPORT_SYMBOL(hci_le_add_dev_white_list);
+
+void hci_le_remove_dev_white_list(struct hci_dev *hdev, bdaddr_t *dst)
+{
+	struct hci_cp_le_remove_dev_white_list cp;
+	struct adv_entry *entry;
+	struct link_key *key;
+
+	BT_DBG("%p", hdev);
+
+	memset(&cp, 0, sizeof(cp));
+	bacpy(&cp.addr, dst);
+
+	key = hci_find_link_key_type(hdev, dst, KEY_TYPE_LTK);
+	if (!key) {
+		entry = hci_find_adv_entry(hdev, dst);
+		if (entry)
+			cp.addr_type = entry->bdaddr_type;
+		else
+			cp.addr_type = 0x00;
+	} else {
+		cp.addr_type = key->addr_type;
+	}
+
+	hci_send_cmd(hdev, HCI_OP_LE_REMOVE_DEV_WHITE_LIST, sizeof(cp), &cp);
+}
+EXPORT_SYMBOL(hci_le_remove_dev_white_list);
+
+static inline bool is_role_switch_possible(struct hci_dev *hdev)
+{
+	if (hci_conn_hash_lookup_state(hdev, ACL_LINK, BT_CONNECTED))
+		return false;
+	return true;
+}
+
+>>>>>>> 57adea9... bluetooth: backport from caf-msm-jb_3.2.1
 void hci_acl_connect(struct hci_conn *conn)
 {
 	struct hci_dev *hdev = conn->hdev;
@@ -156,7 +234,8 @@ void hci_acl_connect(struct hci_conn *conn)
 	}
 
 	cp.pkt_type = cpu_to_le16(conn->pkt_type);
-	if (lmp_rswitch_capable(hdev) && !(hdev->link_mode & HCI_LM_MASTER))
+	if (lmp_rswitch_capable(hdev) && !(hdev->link_mode & HCI_LM_MASTER)
+		&& is_role_switch_possible(hdev))
 		cp.role_switch = 0x01;
 	else
 		cp.role_switch = 0x00;
@@ -448,6 +527,8 @@ struct hci_conn *hci_conn_add(struct hci_dev *hdev, int type,
 
 	conn->power_save = 1;
 	conn->disc_timeout = HCI_DISCONN_TIMEOUT;
+	conn->conn_valid = true;
+	spin_lock_init(&conn->lock);
 
 	switch (type) {
 	case ACL_LINK:
@@ -519,6 +600,10 @@ int hci_conn_del(struct hci_conn *conn)
 
 	BT_DBG("%s conn %p handle %d", hdev->name, conn, conn->handle);
 
+	spin_lock_bh(&conn->lock);
+	conn->conn_valid = false; /* conn data is being released */
+	spin_unlock_bh(&conn->lock);
+
 	/* Make sure no timers are running */
 	del_timer(&conn->idle_timer);
 	del_timer(&conn->disc_timer);
@@ -559,6 +644,9 @@ int hci_conn_del(struct hci_conn *conn)
 	skb_queue_purge(&conn->data_q);
 
 	hci_conn_put_device(conn);
+
+	if (conn->hidp_session_valid)
+		hci_conn_put_device(conn);
 
 	hci_dev_put(hdev);
 
@@ -755,7 +843,18 @@ struct hci_conn *hci_connect(struct hci_dev *hdev, int type,
 	if (type == ACL_LINK)
 		return acl;
 
+	/* type of connection already existing can be ESCO or SCO
+	 * so check for both types before creating new */
+
 	sco = hci_conn_hash_lookup_ba(hdev, type, dst);
+
+	if (!sco && type == ESCO_LINK) {
+		sco = hci_conn_hash_lookup_ba(hdev, SCO_LINK, dst);
+	} else if (!sco && type == SCO_LINK) {
+		/* this case can be practically not possible */
+		sco = hci_conn_hash_lookup_ba(hdev, ESCO_LINK, dst);
+	}
+
 	if (!sco) {
 		sco = hci_conn_add(hdev, type, pkt_type, dst);
 		if (!sco) {
@@ -949,6 +1048,9 @@ void hci_conn_enter_active_mode(struct hci_conn *conn, __u8 force_active)
 	if (test_bit(HCI_RAW, &hdev->flags))
 		return;
 
+	if (conn->type == LE_LINK)
+		return;
+
 	if (conn->mode != HCI_CM_SNIFF)
 		goto timer;
 
@@ -962,9 +1064,14 @@ void hci_conn_enter_active_mode(struct hci_conn *conn, __u8 force_active)
 	}
 
 timer:
-	if (hdev->idle_timeout > 0)
-		mod_timer(&conn->idle_timer,
-			jiffies + msecs_to_jiffies(hdev->idle_timeout));
+	if (hdev->idle_timeout > 0) {
+		spin_lock_bh(&conn->lock);
+		if (conn->conn_valid) {
+			mod_timer(&conn->idle_timer,
+				jiffies + msecs_to_jiffies(hdev->idle_timeout));
+		}
+		spin_unlock_bh(&conn->lock);
+	}
 }
 
 static inline void hci_conn_stop_rssi_timer(struct hci_conn *conn)
@@ -1012,6 +1119,9 @@ void hci_conn_enter_sniff_mode(struct hci_conn *conn)
 	BT_DBG("conn %p mode %d", conn, conn->mode);
 
 	if (test_bit(HCI_RAW, &hdev->flags))
+		return;
+
+	if (conn->type == LE_LINK)
 		return;
 
 	if (!lmp_sniff_capable(hdev) || !lmp_sniff_capable(conn))
@@ -1146,8 +1256,10 @@ EXPORT_SYMBOL(hci_conn_hold_device);
 
 void hci_conn_put_device(struct hci_conn *conn)
 {
-	if (atomic_dec_and_test(&conn->devref))
+	if (atomic_dec_and_test(&conn->devref)) {
+		conn->hidp_session_valid = false;
 		hci_conn_del_sysfs(conn);
+	}
 }
 EXPORT_SYMBOL(hci_conn_put_device);
 
@@ -1285,8 +1397,24 @@ int hci_set_auth_info(struct hci_dev *hdev, void __user *arg)
 
 	hci_dev_lock_bh(hdev);
 	conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &req.bdaddr);
-	if (conn)
+	if (conn) {
 		conn->auth_type = req.type;
+		switch (conn->auth_type) {
+		case HCI_AT_NO_BONDING:
+			conn->pending_sec_level = BT_SECURITY_LOW;
+			break;
+		case HCI_AT_DEDICATED_BONDING:
+		case HCI_AT_GENERAL_BONDING:
+			conn->pending_sec_level = BT_SECURITY_MEDIUM;
+			break;
+		case HCI_AT_DEDICATED_BONDING_MITM:
+		case HCI_AT_GENERAL_BONDING_MITM:
+			conn->pending_sec_level = BT_SECURITY_HIGH;
+			break;
+		default:
+			break;
+		}
+	}
 	hci_dev_unlock_bh(hdev);
 
 	if (!conn)
