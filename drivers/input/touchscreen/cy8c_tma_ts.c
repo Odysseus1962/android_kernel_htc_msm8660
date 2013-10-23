@@ -910,6 +910,78 @@ static irqreturn_t cy8c_ts_irq_thread(int irq, void *ptr)
 					ts->pre_finger_data[0] = finger_data[0][0];
 					ts->pre_finger_data[1] = finger_data[0][1];
 				}
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
+				//left->right
+				if ((ts->finger_count == 1) && (scr_suspended == true) && (s2w_switch > 0)) {
+					prevx = 30;
+					nextx = 300;
+					if ((barrier[0] == true) ||
+					   ((finger_data[loop_i][0] > prevx) &&
+					    (finger_data[loop_i][0] < nextx) &&
+					    (finger_data[loop_i][1] > 950))) {
+						if ((led_exec_count == true) && (scr_on_touch == false) && (s2w_switch != 2)) {
+							pm8058_drvx_led_brightness_set(sweep2wake_leddev, 255);
+							printk(KERN_INFO "[sweep2wake]: activated button_backlight");
+							led_exec_count = false;
+						}
+						prevx = 300;
+						nextx = 680;
+						barrier[0] = true;
+						if ((barrier[1] == true) ||
+						   ((finger_data[loop_i][0] > prevx) &&
+						    (finger_data[loop_i][0] < nextx) &&
+						    (finger_data[loop_i][1] > 950))) {
+							prevx = 680;
+							barrier[1] = true;
+							if ((finger_data[loop_i][0] > prevx) &&
+							    (finger_data[loop_i][1] > 950)) {
+								if (finger_data[loop_i][0] > 840) {
+									if (exec_count) {
+										printk(KERN_INFO "[sweep2wake]: ON");
+										sweep2wake_pwrtrigger();
+										exec_count = false;
+										break;
+									}
+								}
+							}
+						}
+					}
+				//right->left
+				} else if ((ts->finger_count == 1) && (scr_suspended == false) && (s2w_switch > 0)) {
+					scr_on_touch=false;
+					prevx = 1050;
+					nextx = 680;
+					if ((barrier[0] == true) ||
+					   ((finger_data[loop_i][0] < prevx) &&
+					    (finger_data[loop_i][0] > nextx) &&
+					    ( finger_data[loop_i][1] > 950))) {
+						prevx = 680;
+						nextx = 340;
+						barrier[0] = true;
+						if ((barrier[1] == true) ||
+						   ((finger_data[loop_i][0] < prevx) &&
+						    (finger_data[loop_i][0] > nextx) &&
+						    (finger_data[loop_i][1] > 950))) {
+							prevx = 340;
+							barrier[1] = true;
+							if ((finger_data[loop_i][0] < prevx) &&
+							    (finger_data[loop_i][1] > 950)) {
+								if (finger_data[loop_i][0] < 250) {
+									if (exec_count) {
+										printk(KERN_INFO "[sweep2wake]: OFF");
+										sweep2wake_pwrtrigger();
+										exec_count = false;
+										break;
+									}
+								}
+							}
+						}
+					}
+				}
+#endif
+>>>>>>> 400c90a... input: cy8c_tma_ts: Set scr_on_touch to false for Sweep2Wake when the screen is on
 			}
 		}
 	} else {
