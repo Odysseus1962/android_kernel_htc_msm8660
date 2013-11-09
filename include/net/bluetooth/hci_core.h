@@ -164,11 +164,6 @@ struct hci_dev {
 	unsigned int	acl_pkts;
 	unsigned int	sco_pkts;
 	unsigned int	le_pkts;
-<<<<<<< HEAD
-
-	unsigned int	data_block_len;
-=======
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 
 	unsigned long	acl_last_tx;
 	unsigned long	sco_last_tx;
@@ -457,17 +452,8 @@ void hci_conn_hash_flush(struct hci_dev *hdev);
 void hci_conn_check_pending(struct hci_dev *hdev);
 
 struct hci_conn *hci_connect(struct hci_dev *hdev, int type,
-<<<<<<< HEAD
-					__u16 pkt_type, bdaddr_t *dst,
-					__u8 sec_level, __u8 auth_type);
-struct hci_conn *hci_le_connect(struct hci_dev *hdev, __u16 pkt_type,
-					bdaddr_t *dst, __u8 sec_level,
-					__u8 auth_type,
-					struct bt_le_params *le_params);
-=======
 						__u16 pkt_type, bdaddr_t *dst,
 						__u8 sec_level, __u8 auth_type);
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 int hci_conn_check_link_mode(struct hci_conn *conn);
 int hci_conn_check_secure(struct hci_conn *conn, __u8 sec_level);
 int hci_conn_security(struct hci_conn *conn, __u8 sec_level, __u8 auth_type);
@@ -852,13 +838,8 @@ int mgmt_index_removed(u16 index);
 int mgmt_powered(u16 index, u8 powered);
 int mgmt_discoverable(u16 index, u8 discoverable);
 int mgmt_connectable(u16 index, u8 connectable);
-<<<<<<< HEAD
-int mgmt_new_key(u16 index, struct link_key *key, u8 bonded);
-int mgmt_connected(u16 index, bdaddr_t *bdaddr, u8 le);
-=======
 int mgmt_new_key(u16 index, struct link_key *key, u8 persistent);
 int mgmt_connected(u16 index, bdaddr_t *bdaddr);
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 int mgmt_disconnected(u16 index, bdaddr_t *bdaddr);
 int mgmt_disconnect_failed(u16 index);
 int mgmt_connect_failed(u16 index, bdaddr_t *bdaddr, u8 status);

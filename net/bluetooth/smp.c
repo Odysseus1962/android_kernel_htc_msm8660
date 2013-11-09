@@ -436,26 +436,6 @@ static u8 smp_cmd_security_req(struct l2cap_conn *conn, struct sk_buff *skb)
 	if (test_bit(HCI_CONN_ENCRYPT_PEND, &hcon->pend))
 		return 0;
 
-<<<<<<< HEAD
-	key = hci_find_link_key_type(hcon->hdev, conn->dst, KEY_TYPE_LTK);
-	if (key && ((key->auth & SMP_AUTH_MITM) ||
-					!(rp->auth_req & SMP_AUTH_MITM))) {
-
-		if (smp_encrypt_link(hcon, key) < 0)
-			goto invalid_key;
-
-		return 0;
-	}
-
-invalid_key:
-	hcon->sec_req = FALSE;
-
-	/* Switch to Pairing Connection Parameters */
-	hci_le_conn_update(hcon, SMP_MIN_CONN_INTERVAL, SMP_MAX_CONN_INTERVAL,
-			SMP_MAX_CONN_LATENCY, SMP_SUPERVISION_TIMEOUT);
-
-=======
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 	skb_pull(skb, sizeof(*rp));
 
 	memset(&cp, 0, sizeof(cp));
@@ -513,11 +493,6 @@ int smp_conn_security(struct l2cap_conn *conn, __u8 sec_level)
 
 			goto done;
 		}
-
-		/* Switch to Pairing Connection Parameters */
-		hci_le_conn_update(hcon, SMP_MIN_CONN_INTERVAL,
-				SMP_MAX_CONN_INTERVAL, SMP_MAX_CONN_LATENCY,
-				SMP_SUPERVISION_TIMEOUT);
 
 		build_pairing_cmd(conn, &cp, NULL, authreq);
 		conn->preq[0] = SMP_CMD_PAIRING_REQ;

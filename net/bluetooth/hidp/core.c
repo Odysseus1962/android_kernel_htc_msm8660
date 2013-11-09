@@ -1,13 +1,6 @@
 /*
    HIDP implementation for Linux Bluetooth stack (BlueZ).
    Copyright (C) 2003-2004 Marcel Holtmann <marcel@holtmann.org>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-   Copyright (c) 2012-2013 The Linux Foundation.  All rights reserved.
->>>>>>> 57adea9... bluetooth: backport from caf-msm-jb_3.2.1
-=======
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License version 2 as
@@ -110,29 +103,7 @@ static void __hidp_link_session(struct hidp_session *session)
 
 static void __hidp_unlink_session(struct hidp_session *session)
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
 	hci_conn_put_device(session->conn);
-=======
-	bdaddr_t *dst = &session->bdaddr;
-	struct hci_dev *hdev;
-	struct device *dev = NULL;
-
-	hdev = hci_get_route(dst, BDADDR_ANY);
-	if (hdev) {
-		session->conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, dst);
-		if (session->conn && session->conn->hidp_session_valid)
-			dev = &session->conn->dev;
-
-		hci_dev_put(hdev);
-	}
-
-	if (dev)
-		hci_conn_put_device(session->conn);
->>>>>>> 57adea9... bluetooth: backport from caf-msm-jb_3.2.1
-=======
-	hci_conn_put_device(session->conn);
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 
 	list_del(&session->list);
 	module_put(THIS_MODULE);
@@ -798,35 +769,17 @@ static int hidp_session(void *arg)
 	return 0;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 static struct device *hidp_get_device(struct hidp_session *session)
 {
 	bdaddr_t *src = &bt_sk(session->ctrl_sock->sk)->src;
 	bdaddr_t *dst = &bt_sk(session->ctrl_sock->sk)->dst;
 	struct device *device = NULL;
-=======
-static struct hci_conn *hidp_get_connection(struct hidp_session *session)
-{
-	bdaddr_t *src = &bt_sk(session->ctrl_sock->sk)->src;
-	bdaddr_t *dst = &bt_sk(session->ctrl_sock->sk)->dst;
-	struct hci_conn *conn;
->>>>>>> 57adea9... bluetooth: backport from caf-msm-jb_3.2.1
-=======
-static struct device *hidp_get_device(struct hidp_session *session)
-{
-	bdaddr_t *src = &bt_sk(session->ctrl_sock->sk)->src;
-	bdaddr_t *dst = &bt_sk(session->ctrl_sock->sk)->dst;
-	struct device *device = NULL;
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 	struct hci_dev *hdev;
 
 	hdev = hci_get_route(dst, src);
 	if (!hdev)
 		return NULL;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 	session->conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, dst);
 	if (session->conn)
 		device = &session->conn->dev;
@@ -834,28 +787,6 @@ static struct device *hidp_get_device(struct hidp_session *session)
 	hci_dev_put(hdev);
 
 	return device;
-=======
-	hci_dev_lock_bh(hdev);
-	conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, dst);
-	if (conn) {
-		conn->hidp_session_valid = true;
-		hci_conn_hold_device(conn);
-	}
-	hci_dev_unlock_bh(hdev);
-
-	hci_dev_put(hdev);
-
-	return conn;
->>>>>>> 57adea9... bluetooth: backport from caf-msm-jb_3.2.1
-=======
-	session->conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, dst);
-	if (session->conn)
-		device = &session->conn->dev;
-
-	hci_dev_put(hdev);
-
-	return device;
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 }
 
 static int hidp_setup_input(struct hidp_session *session,

@@ -47,35 +47,8 @@
 
 static void hci_le_connect(struct hci_conn *conn)
 {
-<<<<<<< HEAD
-	struct hci_conn *le;
-	struct hci_cp_le_create_conn cp;
-	struct adv_entry *entry;
-	struct link_key *key;
-
-	BT_DBG("%p", hdev);
-
-	le = hci_conn_hash_lookup_ba(hdev, LE_LINK, dst);
-	if (le) {
-		hci_conn_hold(le);
-		return le;
-	}
-
-	key = hci_find_link_key_type(hdev, dst, KEY_TYPE_LTK);
-	if (!key) {
-		entry = hci_find_adv_entry(hdev, dst);
-		if (entry)
-			le = hci_le_conn_add(hdev, dst,
-					entry->bdaddr_type);
-		else
-			le = hci_le_conn_add(hdev, dst, 0);
-	} else {
-		le = hci_le_conn_add(hdev, dst, key->addr_type);
-	}
-=======
 	struct hci_dev *hdev = conn->hdev;
 	struct hci_cp_le_create_conn cp;
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 
 	conn->state = BT_CONNECT;
 	conn->out = 1;
@@ -83,30 +56,6 @@ static void hci_le_connect(struct hci_conn *conn)
 	conn->sec_level = BT_SECURITY_LOW;
 
 	memset(&cp, 0, sizeof(cp));
-<<<<<<< HEAD
-	if (l2cap_sock_le_params_valid(le_params)) {
-		cp.supervision_timeout =
-				cpu_to_le16(le_params->supervision_timeout);
-		cp.scan_interval = cpu_to_le16(le_params->scan_interval);
-		cp.scan_window = cpu_to_le16(le_params->scan_window);
-		cp.conn_interval_min = cpu_to_le16(le_params->interval_min);
-		cp.conn_interval_max = cpu_to_le16(le_params->interval_max);
-		cp.conn_latency = cpu_to_le16(le_params->latency);
-		cp.min_ce_len = cpu_to_le16(le_params->min_ce_len);
-		cp.max_ce_len = cpu_to_le16(le_params->max_ce_len);
-		le->conn_timeout = le_params->conn_timeout;
-	} else {
-		cp.supervision_timeout = cpu_to_le16(BT_LE_SUP_TO_DEFAULT);
-		cp.scan_interval = cpu_to_le16(BT_LE_SCAN_INTERVAL_DEF);
-		cp.scan_window = cpu_to_le16(BT_LE_SCAN_WINDOW_DEF);
-		cp.conn_interval_min = cpu_to_le16(BT_LE_CONN_INTERVAL_MIN_DEF);
-		cp.conn_interval_max = cpu_to_le16(BT_LE_CONN_INTERVAL_MAX_DEF);
-		cp.conn_latency = cpu_to_le16(BT_LE_LATENCY_DEF);
-		le->conn_timeout = 5;
-	}
-	bacpy(&cp.peer_addr, &le->dst);
-	cp.peer_addr_type = le->dst_type;
-=======
 	cp.scan_interval = cpu_to_le16(0x0004);
 	cp.scan_window = cpu_to_le16(0x0004);
 	bacpy(&cp.peer_addr, &conn->dst);
@@ -116,7 +65,6 @@ static void hci_le_connect(struct hci_conn *conn)
 	cp.supervision_timeout = cpu_to_le16(0x0064);
 	cp.min_ce_len = cpu_to_le16(0x0001);
 	cp.max_ce_len = cpu_to_le16(0x0001);
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 
 	hci_send_cmd(hdev, HCI_OP_LE_CREATE_CONN, sizeof(cp), &cp);
 }
@@ -126,86 +74,6 @@ static void hci_le_connect_cancel(struct hci_conn *conn)
 	hci_send_cmd(conn->hdev, HCI_OP_LE_CREATE_CONN_CANCEL, 0, NULL);
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-void hci_le_cancel_create_connect(struct hci_dev *hdev, bdaddr_t *dst)
-{
-	struct hci_conn *le;
-
-	BT_DBG("%p", hdev);
-
-	le = hci_conn_hash_lookup_ba(hdev, LE_LINK, dst);
-	if (le) {
-		BT_DBG("send hci connect cancel");
-		hci_le_connect_cancel(le);
-		hci_conn_del(le);
-	}
-}
-EXPORT_SYMBOL(hci_le_cancel_create_connect);
-
-void hci_le_add_dev_white_list(struct hci_dev *hdev, bdaddr_t *dst)
-{
-	struct hci_cp_le_add_dev_white_list cp;
-	struct adv_entry *entry;
-	struct link_key *key;
-
-	BT_DBG("%p", hdev);
-
-	memset(&cp, 0, sizeof(cp));
-	bacpy(&cp.addr, dst);
-
-	key = hci_find_link_key_type(hdev, dst, KEY_TYPE_LTK);
-	if (!key) {
-		entry = hci_find_adv_entry(hdev, dst);
-		if (entry)
-			cp.addr_type = entry->bdaddr_type;
-		else
-			cp.addr_type = 0x00;
-	} else {
-		cp.addr_type = key->addr_type;
-	}
-
-	hci_send_cmd(hdev, HCI_OP_LE_ADD_DEV_WHITE_LIST, sizeof(cp), &cp);
-}
-EXPORT_SYMBOL(hci_le_add_dev_white_list);
-
-void hci_le_remove_dev_white_list(struct hci_dev *hdev, bdaddr_t *dst)
-{
-	struct hci_cp_le_remove_dev_white_list cp;
-	struct adv_entry *entry;
-	struct link_key *key;
-
-	BT_DBG("%p", hdev);
-
-	memset(&cp, 0, sizeof(cp));
-	bacpy(&cp.addr, dst);
-
-	key = hci_find_link_key_type(hdev, dst, KEY_TYPE_LTK);
-	if (!key) {
-		entry = hci_find_adv_entry(hdev, dst);
-		if (entry)
-			cp.addr_type = entry->bdaddr_type;
-		else
-			cp.addr_type = 0x00;
-	} else {
-		cp.addr_type = key->addr_type;
-	}
-
-	hci_send_cmd(hdev, HCI_OP_LE_REMOVE_DEV_WHITE_LIST, sizeof(cp), &cp);
-}
-EXPORT_SYMBOL(hci_le_remove_dev_white_list);
-
-static inline bool is_role_switch_possible(struct hci_dev *hdev)
-{
-	if (hci_conn_hash_lookup_state(hdev, ACL_LINK, BT_CONNECTED))
-		return false;
-	return true;
-}
-
->>>>>>> 57adea9... bluetooth: backport from caf-msm-jb_3.2.1
-=======
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 void hci_acl_connect(struct hci_conn *conn)
 {
 	struct hci_dev *hdev = conn->hdev;

@@ -31,60 +31,9 @@
 #include <net/bluetooth/l2cap.h>
 #include <net/bluetooth/smp.h>
 
-<<<<<<< HEAD
-	__l2cap_sock_close(sk, reason);
-
-	bh_unlock_sock(sk);
-
-	l2cap_sock_kill(sk);
-	sock_put(sk);
-}
-
-void l2cap_sock_set_timer(struct sock *sk, long timeout)
-{
-	BT_DBG("sk %p state %d timeout %ld", sk, sk->sk_state, timeout);
-	sk_reset_timer(sk, &sk->sk_timer, jiffies + timeout);
-}
-
-void l2cap_sock_clear_timer(struct sock *sk)
-{
-	BT_DBG("sock %p state %d", sk, sk->sk_state);
-	sk_stop_timer(sk, &sk->sk_timer);
-}
-
-int l2cap_sock_le_params_valid(struct bt_le_params *le_params)
-{
-	if (!le_params || le_params->latency > BT_LE_LATENCY_MAX ||
-			le_params->scan_window > BT_LE_SCAN_WINDOW_MAX ||
-			le_params->scan_interval < BT_LE_SCAN_INTERVAL_MIN ||
-			le_params->scan_window > le_params->scan_interval ||
-			le_params->interval_min < BT_LE_CONN_INTERVAL_MIN ||
-			le_params->interval_max > BT_LE_CONN_INTERVAL_MAX ||
-			le_params->interval_min > le_params->interval_max ||
-			le_params->supervision_timeout < BT_LE_SUP_TO_MIN ||
-			le_params->supervision_timeout > BT_LE_SUP_TO_MAX) {
-		return 0;
-	}
-
-	return 1;
-}
-
-static struct sock *__l2cap_get_sock_by_addr(__le16 psm, bdaddr_t *src)
-{
-	struct sock *sk;
-	struct hlist_node *node;
-	sk_for_each(sk, node, &l2cap_sk_list.head)
-		if (l2cap_pi(sk)->sport == psm && !bacmp(&bt_sk(sk)->src, src))
-			goto found;
-	sk = NULL;
-found:
-	return sk;
-}
-=======
 static const struct proto_ops l2cap_sock_ops;
 static void l2cap_sock_init(struct sock *sk, struct sock *parent);
 static struct sock *l2cap_sock_alloc(struct net *net, struct socket *sock, int proto, gfp_t prio);
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 
 static int l2cap_sock_bind(struct socket *sock, struct sockaddr *addr, int alen)
 {
@@ -719,15 +668,9 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname, ch
 
 		pwr.force_active = BT_POWER_FORCE_ACTIVE_ON;
 
-<<<<<<< HEAD
-		if (!conn->hcon->out ||
-				!l2cap_sock_le_params_valid(&le_params)) {
-			err = -EINVAL;
-=======
 		len = min_t(unsigned int, sizeof(pwr), optlen);
 		if (copy_from_user((char *) &pwr, optval, len)) {
 			err = -EFAULT;
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 			break;
 		}
 		chan->force_active = pwr.force_active;

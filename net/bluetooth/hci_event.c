@@ -1462,6 +1462,15 @@ unlock:
 	hci_conn_check_pending(hdev);
 }
 
+static inline bool is_sco_active(struct hci_dev *hdev)
+{
+	if (hci_conn_hash_lookup_state(hdev, SCO_LINK, BT_CONNECTED) ||
+			(hci_conn_hash_lookup_state(hdev, ESCO_LINK,
+						    BT_CONNECTED)))
+		return true;
+	return false;
+}
+
 static inline void hci_conn_request_evt(struct hci_dev *hdev, struct sk_buff *skb)
 {
 	struct hci_ev_conn_request *ev = (void *) skb->data;
@@ -1505,7 +1514,8 @@ static inline void hci_conn_request_evt(struct hci_dev *hdev, struct sk_buff *sk
 
 			bacpy(&cp.bdaddr, &ev->bdaddr);
 
-			if (lmp_rswitch_capable(hdev) && (mask & HCI_LM_MASTER))
+			if (lmp_rswitch_capable(hdev) && ((mask & HCI_LM_MASTER)
+						|| is_sco_active(hdev)))
 				cp.role = 0x00; /* Become master */
 			else
 				cp.role = 0x01; /* Remain slave */
@@ -1747,16 +1757,6 @@ static inline void hci_remote_features_evt(struct hci_dev *hdev, struct sk_buff 
 		hci_send_cmd(hdev, HCI_OP_READ_REMOTE_EXT_FEATURES,
 							sizeof(cp), &cp);
 		goto unlock;
-<<<<<<< HEAD
-	} else  if (!(lmp_ssp_capable(conn)) && conn->auth_initiator &&
-<<<<<<< HEAD
-		(conn->pending_sec_level == BT_SECURITY_HIGH)) {
-=======
-		(conn->pending_sec_level == BT_SECURITY_VERY_HIGH)) {
->>>>>>> 57adea9... bluetooth: backport from caf-msm-jb_3.2.1
-		conn->pending_sec_level = BT_SECURITY_MEDIUM;
-=======
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 	}
 
 	if (!ev->status) {
@@ -1945,13 +1945,6 @@ static inline void hci_cmd_complete_evt(struct hci_dev *hdev, struct sk_buff *sk
 		hci_cc_le_read_buffer_size(hdev, skb);
 		break;
 
-<<<<<<< HEAD
-	case HCI_OP_READ_RSSI:
-		hci_cc_read_rssi(hdev, skb);
-		break;
-
-=======
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 	case HCI_OP_USER_CONFIRM_REPLY:
 		hci_cc_user_confirm_reply(hdev, skb);
 		break;
@@ -2840,11 +2833,6 @@ static inline void hci_le_conn_complete_evt(struct hci_dev *hdev, struct sk_buff
 	conn->sec_level = BT_SECURITY_LOW;
 	conn->handle = __le16_to_cpu(ev->handle);
 	conn->state = BT_CONNECTED;
-<<<<<<< HEAD
-	conn->disc_timeout = HCI_DISCONN_TIMEOUT;
-	mgmt_connected(hdev->id, &ev->bdaddr, 1);
-=======
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 
 	hci_conn_hold_device(conn);
 	hci_conn_add_sysfs(conn);
@@ -2852,8 +2840,6 @@ static inline void hci_le_conn_complete_evt(struct hci_dev *hdev, struct sk_buff
 	hci_proto_connect_cfm(conn, ev->status);
 
 unlock:
-<<<<<<< HEAD
-=======
 	hci_dev_unlock(hdev);
 }
 
@@ -2875,7 +2861,6 @@ static inline void hci_le_adv_report_evt(struct hci_dev *hdev,
 		hci_add_adv_entry(hdev, ev);
 	}
 
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 	hci_dev_unlock(hdev);
 }
 
@@ -2927,13 +2912,10 @@ static inline void hci_le_meta_evt(struct hci_dev *hdev, struct sk_buff *skb)
 		hci_le_conn_complete_evt(hdev, skb);
 		break;
 
-<<<<<<< HEAD
-=======
 	case HCI_EV_LE_ADVERTISING_REPORT:
 		hci_le_adv_report_evt(hdev, skb);
 		break;
 
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 	case HCI_EV_LE_LTK_REQ:
 		hci_le_ltk_request_evt(hdev, skb);
 		break;

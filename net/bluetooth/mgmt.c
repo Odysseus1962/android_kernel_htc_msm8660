@@ -1271,53 +1271,6 @@ static int set_io_capability(struct sock *sk, u16 index, unsigned char *data,
 
 	hci_dev_lock_bh(hdev);
 
-<<<<<<< HEAD
-	if (!test_bit(HCI_UP, &hdev->flags)) {
-		err = cmd_status(sk, index, MGMT_OP_PIN_CODE_NEG_REPLY,
-								ENETDOWN);
-		goto failed;
-	}
-
-	cmd = mgmt_pending_add(sk, MGMT_OP_PIN_CODE_NEG_REPLY, index,
-								data, len);
-	if (!cmd) {
-		err = -ENOMEM;
-		goto failed;
-	}
-
-	err = hci_send_cmd(hdev, HCI_OP_PIN_CODE_NEG_REPLY, sizeof(cp->bdaddr),
-								&cp->bdaddr);
-	if (err < 0)
-		mgmt_pending_remove(cmd);
-
-failed:
-	hci_dev_unlock_bh(hdev);
-	hci_dev_put(hdev);
-
-	return err;
-}
-
-static int set_io_capability(struct sock *sk, u16 index, unsigned char *data,
-									u16 len)
-{
-	struct hci_dev *hdev;
-	struct mgmt_cp_set_io_capability *cp;
-
-	BT_DBG("");
-
-	cp = (void *) data;
-
-	if (len != sizeof(*cp))
-		return cmd_status(sk, index, MGMT_OP_SET_IO_CAPABILITY, EINVAL);
-
-	hdev = hci_dev_get(index);
-	if (!hdev)
-		return cmd_status(sk, index, MGMT_OP_SET_IO_CAPABILITY, ENODEV);
-
-	hci_dev_lock_bh(hdev);
-
-=======
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 	hdev->io_capability = cp->io_capability;
 
 	BT_DBG("%s IO capability set to 0x%02x", hdev->name,
@@ -1904,27 +1857,8 @@ int mgmt_control(struct sock *sk, struct msghdr *msg, size_t msglen)
 		err = remove_remote_oob_data(sk, index, buf + sizeof(*hdr),
 									len);
 		break;
-<<<<<<< HEAD
-	case MGMT_OP_ENCRYPT_LINK:
-		err = encrypt_link(sk, index, buf + sizeof(*hdr), len);
-		break;
-<<<<<<< HEAD
-
-=======
-	case MGMT_OP_LE_ADD_DEV_WHITE_LIST:
-		err = le_add_dev_white_list(sk, index, buf + sizeof(*hdr),
-									len);
-		break;
-	case MGMT_OP_LE_REMOVE_DEV_WHITE_LIST:
-		err = le_remove_dev_white_list(sk, index, buf + sizeof(*hdr),
-									len);
-		break;
-	case MGMT_OP_LE_CLEAR_WHITE_LIST:
-		err = le_clear_white_list(sk, index);
-=======
 	case MGMT_OP_START_DISCOVERY:
 		err = start_discovery(sk, index);
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 		break;
 	case MGMT_OP_STOP_DISCOVERY:
 		err = stop_discovery(sk, index);
@@ -1935,7 +1869,6 @@ int mgmt_control(struct sock *sk, struct msghdr *msg, size_t msglen)
 	case MGMT_OP_UNBLOCK_DEVICE:
 		err = unblock_device(sk, index, buf + sizeof(*hdr), len);
 		break;
->>>>>>> 57adea9... bluetooth: backport from caf-msm-jb_3.2.1
 	default:
 		BT_DBG("Unknown op %u", opcode);
 		err = cmd_status(sk, index, opcode, 0x01);
@@ -2073,10 +2006,6 @@ int mgmt_connected(u16 index, bdaddr_t *bdaddr)
 	struct mgmt_ev_connected ev;
 
 	bacpy(&ev.bdaddr, bdaddr);
-<<<<<<< HEAD
-	ev.le = le;
-=======
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 
 	return mgmt_event(MGMT_EV_CONNECTED, index, &ev, sizeof(ev), NULL);
 }

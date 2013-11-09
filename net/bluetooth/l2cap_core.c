@@ -2619,14 +2619,7 @@ static inline int l2cap_config_rsp(struct l2cap_conn *conn, struct l2cap_cmd_hdr
 	if (!chan)
 		return 0;
 
-<<<<<<< HEAD
-	if (!sk)
-		return;
-
-	lock_sock(sk);
-=======
 	sk = chan->sk;
->>>>>>> dd8fed5... net: Import Bluetooth stack from Google's common 3.0 kernel
 
 	switch (result) {
 	case L2CAP_CONF_SUCCESS:
