@@ -2170,6 +2170,7 @@ static void __init msm8x60_init_dsps(void)
 }
 #endif /* CONFIG_MSM_DSPS */
 
+<<<<<<< HEAD
 #ifdef CONFIG_FB_MSM_LCDC_DSUB
 /* VGA = 1440 x 900 x 4(bpp) x 2(pages)
    prim = 1024 x 600 x 4(bpp) x 2(pages)
@@ -2327,6 +2328,8 @@ static void __init msm8x60_init_dsps(void)
 /* END ION Memory map */
 >>>>>>> 2aba475... holiday: fixup the memory mapping to stop the FB trashing
 
+=======
+>>>>>>> 28018be... holiday: massive remap of memory heaps.
 static unsigned fb_size;
 static int __init fb_size_setup(char *p)
 {
@@ -2467,7 +2470,7 @@ static struct ion_platform_data ion_pdata = {
 			.id	= ION_SF_HEAP_ID,
 			.type	= ION_HEAP_TYPE_CARVEOUT,
 			.name	= ION_SF_HEAP_NAME,
-			.base	= MSM_ION_SF_BASE,
+			//.base	= MSM_ION_SF_BASE,
 			.size	= MSM_ION_SF_SIZE,
 			.memory_type = ION_EBI_TYPE,
 			.extra_data = (void *) &co_ion_pdata,
@@ -7074,7 +7077,7 @@ static void __init msm8x60_calculate_reserve_sizes(void)
 
 static int msm8x60_paddr_to_memtype(phys_addr_t paddr)
 {
-	if (paddr >= 0x40000000 && paddr < 0x70000000)
+	if (paddr >= 0x40000000 && paddr < 0x60000000)
 		return MEMTYPE_EBI1;
 	if (paddr >= 0x38000000 && paddr < 0x40000000)
 		return MEMTYPE_SMI;
@@ -7387,6 +7390,7 @@ static void __init holiday_init(void)
 	printk(KERN_INFO "%s revision=%d engineerid=%d\n", __func__, system_rev, engineerid);
 }
 
+<<<<<<< HEAD
 #define PHY_BASE_ADDR1  0x48000000
 <<<<<<< HEAD
 #define SIZE_ADDR1	  0x35100000
@@ -7398,6 +7402,8 @@ static void __init holiday_init(void)
 =======
 >>>>>>> 2aba475... holiday: fixup the memory mapping to stop the FB trashing
 
+=======
+>>>>>>> 28018be... holiday: massive remap of memory heaps.
 static void __init holiday_fixup(struct machine_desc *desc, struct tag *tags,
 				 char **cmdline, struct meminfo *mi)
 {
