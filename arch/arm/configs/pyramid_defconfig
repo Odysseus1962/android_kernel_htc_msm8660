@@ -1,10 +1,14 @@
 #
 # Automatically generated make config: don't edit
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Linux/arm 3.0.53 Kernel Configuration
 =======
 # Linux/arm 3.0.99 Kernel Configuration
 >>>>>>> e975915... msm8660: autoupdate defconfig
+=======
+# Linux/arm 3.0.101 Kernel Configuration
+>>>>>>> a667e9a... msm8660: build modules into kernel and autoregen defconfig
 #
 CONFIG_ARM=y
 CONFIG_SYS_SUPPORTS_APM_EMULATION=y
@@ -147,7 +151,6 @@ CONFIG_SLUB=y
 # CONFIG_SLOB is not set
 # CONFIG_PROFILING is not set
 CONFIG_HAVE_OPROFILE=y
-# CONFIG_KPROBES is not set
 CONFIG_HAVE_KPROBES=y
 CONFIG_HAVE_KRETPROBES=y
 CONFIG_USE_GENERIC_SMP_HELPERS=y
@@ -160,12 +163,7 @@ CONFIG_HAVE_CLK=y
 CONFIG_HAVE_GENERIC_DMA_COHERENT=y
 CONFIG_RT_MUTEXES=y
 CONFIG_BASE_SMALL=0
-CONFIG_MODULES=y
-# CONFIG_MODULE_FORCE_LOAD is not set
-CONFIG_MODULE_UNLOAD=y
-CONFIG_MODULE_FORCE_UNLOAD=y
-# CONFIG_MODVERSIONS is not set
-# CONFIG_MODULE_SRCVERSION_ALL is not set
+# CONFIG_MODULES is not set
 CONFIG_STOP_MACHINE=y
 CONFIG_BLOCK=y
 CONFIG_LBDAF=y
@@ -1304,8 +1302,13 @@ CONFIG_WLAN=y
 # CONFIG_LIBRA_SDIOIF is not set
 # CONFIG_ATH_COMMON is not set
 # CONFIG_BCM4329 is not set
+<<<<<<< HEAD
 CONFIG_BCMDHD=m
 CONFIG_BCMDHD_FW_PATH="/system/etc/firmware/fw_bcmdhd.bin"
+=======
+CONFIG_BCMDHD=y
+CONFIG_BCMDHD_FW_PATH="/vendor/firmware/fw_bcmdhd.bin"
+>>>>>>> a667e9a... msm8660: build modules into kernel and autoregen defconfig
 CONFIG_BCMDHD_NVRAM_PATH="/proc/calibration"
 # CONFIG_HOSTAP is not set
 # CONFIG_IWM is not set
@@ -1604,7 +1607,6 @@ CONFIG_I2C_SSBI=y
 #
 # Other I2C/SMBus bus drivers
 #
-# CONFIG_I2C_STUB is not set
 # CONFIG_I2C_DEBUG_CORE is not set
 # CONFIG_I2C_DEBUG_ALGO is not set
 # CONFIG_I2C_DEBUG_BUS is not set
@@ -1984,6 +1986,8 @@ CONFIG_MSM_KGSL_PAGE_TABLE_SIZE=0xFFF0000
 CONFIG_MSM_KGSL_PAGE_TABLE_COUNT=32
 CONFIG_MSM_KGSL_MMU_PAGE_FAULT=y
 # CONFIG_MSM_KGSL_DISABLE_SHADOW_WRITES is not set
+# CONFIG_MSM_KGSL_SIMPLE_GOV is not set
+CONFIG_KGSL_COMPAT=y
 # CONFIG_VGASTATE is not set
 # CONFIG_VIDEO_OUTPUT_CONTROL is not set
 CONFIG_FB=y
@@ -2400,7 +2404,6 @@ CONFIG_MODEM_SUPPORT=y
 CONFIG_RMNET_SMD_CTL_CHANNEL=""
 CONFIG_RMNET_SMD_DATA_CHANNEL=""
 # CONFIG_USB_ANDROID_RMNET_CTRL_SMD is not set
-CONFIG_USB_HTC_SWITCH_STUB=y
 
 #
 # OTG and related infrastructure
@@ -2607,7 +2610,6 @@ CONFIG_ANDROID_SYSTEM_LOG_SIZE=256
 CONFIG_ANDROID_EVENTS_LOG_SIZE=256
 # CONFIG_POHMELFS is not set
 # CONFIG_LINE6_USB is not set
-# CONFIG_VT6656 is not set
 # CONFIG_IIO is not set
 # CONFIG_XVMALLOC is not set
 # CONFIG_ZRAM is not set
@@ -2888,7 +2890,6 @@ CONFIG_CRYPTO_MANAGER_DISABLE_TESTS=y
 CONFIG_CRYPTO_WORKQUEUE=y
 # CONFIG_CRYPTO_CRYPTD is not set
 CONFIG_CRYPTO_AUTHENC=y
-# CONFIG_CRYPTO_TEST is not set
 
 #
 # Authenticated Encryption with Associated Data
