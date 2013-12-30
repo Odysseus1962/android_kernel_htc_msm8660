@@ -101,21 +101,24 @@
 #define MSM_SMI_ION_BASE        0x40400000
 #define MSM_ION_MM_BASE         0x40400000
 
+<<<<<<< HEAD
 
 >>>>>>> 2af6afd... holiday: update ION memory heaps for new vidc changes.
 
+=======
+>>>>>>> 2bef160... holiday: fixup ION_HEAP_NUM ifdef
 #ifdef CONFIG_TZCOM
 #define MSM_ION_QSECOM_SIZE   MSM_PMEM_KERNEL_EBI1_SIZE
 #ifdef CONFIG_MSM_IOMMU
-#define MSM_ION_HEAP_NUM      9
+#define MSM_ION_HEAP_NUM      4
 #else
-#define MSM_ION_HEAP_NUM      10
+#define MSM_ION_HEAP_NUM      5
 #endif
 #else
 #ifdef CONFIG_MSM_IOMMU
-#define MSM_ION_HEAP_NUM      8
+#define MSM_ION_HEAP_NUM      3
 #else
-#define MSM_ION_HEAP_NUM      9
+#define MSM_ION_HEAP_NUM      4
 #endif
 #endif
 
