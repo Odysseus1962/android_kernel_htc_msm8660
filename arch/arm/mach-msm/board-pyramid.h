@@ -1,6 +1,10 @@
-/* linux/arch/arm/mach-msm/board-spade.h
+/* linux/arch/arm/mach-msm/board-pyramid.h
  *
  * Copyright (C) 2010-2011 HTC Corporation.
+ *
+ * Copyright (c) 2013 Sultanxda <sultanxda@gmail.com>
+ * Copyright (c) 2013 Sebastian Sobczyk <sebastiansobczyk@wp.pl>
+ * Copyright (c) 2013 bilalliberty <dominos_liberty @ xda-developers>
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -16,14 +20,18 @@
 #define __ARCH_ARM_MACH_MSM_BOARD_PYRAMID_H
 
 #include <mach/board.h>
+#include <mach/msm_memtypes.h>
 
 #define PYRAMID_PROJECT_NAME	"pyramid"
 
 #define MSM_RAM_CONSOLE_BASE	MSM_HTC_RAM_CONSOLE_PHYS
 #define MSM_RAM_CONSOLE_SIZE	MSM_HTC_RAM_CONSOLE_SIZE
 
+<<<<<<< HEAD
 /* Memory map */
 
+=======
+>>>>>>> cb2206d... pyramid: ION support
 #if defined(CONFIG_CRYPTO_DEV_QCRYPTO) || \
 		defined(CONFIG_CRYPTO_DEV_QCRYPTO_MODULE) || \
 		defined(CONFIG_CRYPTO_DEV_QCEDEV) || \
@@ -32,6 +40,7 @@
 #define QCE_0_BASE		0x18500000
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
 #define MSM_FB_PRIM_BUF_SIZE (960 * ALIGN(540, 32) * 4 * 3) /* 4 bpp x 3 pages */
 #else
@@ -69,27 +78,51 @@
 #define MSM_FB_BASE		(0x70000000 - MSM_FB_SIZE)
 #define MSM_PMEM_MDP_BASE	(0x6D600000)
 #define MSM_PMEM_KERNEL_EBI1_BASE	(MSM_PMEM_AUDIO_BASE + MSM_PMEM_AUDIO_SIZE)
+=======
+/*** Memory map ***/
+#define MSM_ION_HEAP_NUM      4
 
-#define MSM_SMI_BASE          0x38000000
+#define MSM_FB_SIZE roundup((960 * ALIGN(540, 32) * 4 * 3) + 0x3F4800, 4096)
+
+// PMEM SMI
 #define MSM_SMI_SIZE          0x4000000
-
-/* Kernel SMI PMEM Region for video core, used for Firmware */
-/* and encoder,decoder scratch buffers */
-/* Kernel SMI PMEM Region Should always precede the user space */
-/* SMI PMEM Region, as the video core will use offset address */
-/* from the Firmware base */
-#define KERNEL_SMI_BASE       (MSM_SMI_BASE)
-#define KERNEL_SMI_SIZE       0x400000
-
-/* User space SMI PMEM Region for video core*/
-/* used for encoder, decoder input & output buffers  */
-#define USER_SMI_BASE         (KERNEL_SMI_BASE + KERNEL_SMI_SIZE)
+#define KERNEL_SMI_SIZE       0x600000
 #define USER_SMI_SIZE         (MSM_SMI_SIZE - KERNEL_SMI_SIZE)
-#define MSM_PMEM_SMIPOOL_BASE USER_SMI_BASE
 #define MSM_PMEM_SMIPOOL_SIZE USER_SMI_SIZE
 
+// PMEM
+#define MSM_PMEM_AUDIO_SIZE   0x239000
+#define MSM_PMEM_ADSP_SIZE    0x1800000
+
+// ION SMI
+#define MSM_ION_MM_SIZE       0x3000000
+#define MSM_SMI_ION_SIZE      0x3200000
+>>>>>>> cb2206d... pyramid: ION support
+
+// ION
+#define MSM_ION_WB_SIZE       0x2FD000
+#define MSM_ION_SF_SIZE       0x2900000
+
+// Base addresses
+#define MSM_SMI_BASE          (0x38000000)
+#define KERNEL_SMI_BASE       (MSM_SMI_BASE)
+#define USER_SMI_BASE         (KERNEL_SMI_BASE + KERNEL_SMI_SIZE)
+#define MSM_PMEM_SMIPOOL_BASE USER_SMI_BASE
+#define MSM_ION_SF_BASE       (0x40400000)
+#define MSM_ION_WB_BASE       (0x45C00000)
+#define MSM_PMEM_AUDIO_BASE   (0x46400000)
+#define MSM_ION_MM_BASE       (0x6B600000)
+#define MSM_SMI_ION_BASE      (0x6B600000)
+#define MSM_PMEM_ADSP_BASE    (0x6E800000)
+
+// Userspace allocation
 #define PHY_BASE_ADDR1  0x48000000
+<<<<<<< HEAD
 #define SIZE_ADDR1      0x25600000
+=======
+#define SIZE_ADDR1      0x23600000
+/*** END Memory map ***/
+>>>>>>> cb2206d... pyramid: ION support
 
 /* GPIO definition */
 
