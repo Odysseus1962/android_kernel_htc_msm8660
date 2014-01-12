@@ -7182,38 +7182,35 @@ static struct platform_device *ruby_devices[] __initdata = {
 };
 
 static struct memtype_reserve msm8x60_reserve_table[] __initdata = {
-	/* Kernel SMI memory pool for video core, used for firmware */
-	/* and encoder, decoder scratch buffers */
-	/* Kernel SMI memory pool should always precede the user space */
-	/* SMI memory pool, as the video core will use offset address */
-	/* from the Firmware base */
-	[MEMTYPE_SMI_KERNEL] = {
-		.start	=	KERNEL_SMI_BASE,
-		.limit	=	KERNEL_SMI_SIZE,
-		.size	=	KERNEL_SMI_SIZE,
-		.flags	=	MEMTYPE_FLAGS_FIXED,
-	},
-	/* User space SMI memory pool for video core */
-	/* used for encoder, decoder input & output buffers  */
-	[MEMTYPE_SMI] = {
-		.start	=	USER_SMI_BASE,
-		.limit	=	USER_SMI_SIZE,
-		.flags	=	MEMTYPE_FLAGS_FIXED,
-	},
-
-	[MEMTYPE_SMI_ION] = {
-		.start  = MSM_SMI_ION_BASE,
- 		.limit  = MSM_SMI_ION_SIZE,
- 		.flags  = MEMTYPE_FLAGS_FIXED,
- 	},
-	[MEMTYPE_EBI0] = {
-		.flags	=	MEMTYPE_FLAGS_1M_ALIGN,
-	},
-	},
-	[MEMTYPE_EBI1] = {
-		.flags	=	MEMTYPE_FLAGS_1M_ALIGN,
-	},
-
+        /* Kernel SMI memory pool for video core, used for firmware */
+        /* and encoder, decoder scratch buffers */
+        /* Kernel SMI memory pool should always precede the user space */
+        /* SMI memory pool, as the video core will use offset address */
+        /* from the Firmware base */
+        [MEMTYPE_SMI_KERNEL] = {
+                .start        =        KERNEL_SMI_BASE,
+                .limit        =        KERNEL_SMI_SIZE,
+                .size        =        KERNEL_SMI_SIZE,
+                .flags        =        MEMTYPE_FLAGS_FIXED,
+        },
+        /* User space SMI memory pool for video core */
+        /* used for encoder, decoder input & output buffers  */
+        [MEMTYPE_SMI] = {
+                .start        =        USER_SMI_BASE,
+                .limit        =        USER_SMI_SIZE,
+                .flags        =        MEMTYPE_FLAGS_FIXED,
+        },
+        [MEMTYPE_SMI_ION] = {
+                .start  = MSM_SMI_ION_BASE,
+                .limit  = MSM_SMI_ION_SIZE,
+                .flags  = MEMTYPE_FLAGS_FIXED,
+        },
+        [MEMTYPE_EBI0] = {
+                .flags        =        MEMTYPE_FLAGS_1M_ALIGN,
+        },
+        [MEMTYPE_EBI1] = {
+                .flags        =        MEMTYPE_FLAGS_1M_ALIGN,
+        },
 };
 
 #ifdef CONFIG_ANDROID_PMEM
