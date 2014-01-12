@@ -135,6 +135,21 @@
 #ifdef CONFIG_CPU_FREQ_GOV_ONDEMAND_2_PHASE
 int set_two_phase_freq(int cpufreq);
 #endif
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CPU_FREQ_GOV_INTELLIDEMAND
+int id_set_two_phase_freq(int cpufreq);
+#endif
+#ifdef CONFIG_CPU_FREQ_GOV_BADASS_2_PHASE
+int set_two_phase_freq_badass(int cpufreq);
+#endif
+#ifdef CONFIG_CPU_FREQ_GOV_BADASS_3_PHASE
+int set_three_phase_freq_badass(int cpufreq);
+#endif
+#ifdef CONFIG_ION_MSM
+static struct platform_device ion_dev;
+#endif
+>>>>>>> 20e2e47... pyramid: ION: rebase off of sultan's updated heaps
 
 /* Macros assume PMIC GPIOs start at 0 */
 #define PM8058_GPIO_BASE			NR_MSM_GPIOS
@@ -1939,6 +1954,7 @@ static struct resource msm_fb_resources[] = {
 };
 
 #ifdef CONFIG_ANDROID_PMEM
+<<<<<<< HEAD
 #ifndef CONFIG_MSM_MULTIMEDIA_USE_ION
 
 static struct android_pmem_platform_data android_pmem_pdata = {
@@ -1953,6 +1969,8 @@ static struct platform_device android_pmem_device = {
 	.dev = {.platform_data = &android_pmem_pdata},
 };
 
+=======
+>>>>>>> 20e2e47... pyramid: ION: rebase off of sultan's updated heaps
 static struct android_pmem_platform_data android_pmem_adsp_pdata = {
 	.name = "pmem_adsp",
 	.allocator_type = PMEM_ALLOCATORTYPE_BITMAP,
@@ -1963,12 +1981,15 @@ static struct platform_device android_pmem_adsp_device = {
 	.name = "android_pmem",
 	.id = 2,
 	.dev = { .platform_data = &android_pmem_adsp_pdata },
+<<<<<<< HEAD
 };
 
 static struct android_pmem_platform_data android_pmem_adsp2_pdata = {
 	.name = "pmem_adsp2",
 	.allocator_type = PMEM_ALLOCATORTYPE_BITMAP,
 	.cached = 0,
+=======
+>>>>>>> 20e2e47... pyramid: ION: rebase off of sultan's updated heaps
 };
 
 static struct platform_device android_pmem_adsp2_device = {
@@ -2030,6 +2051,104 @@ void *pmem_setup_smi_region(void)
 	return (void *)msm_bus_scale_register_client(&smi_client_pdata);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ION_MSM
+#ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
+static int request_smi_region(void *data)
+{
+	pmem_request_smi_region(data);
+
+	return 0;
+}
+
+static int release_smi_region(void *data)
+{
+	pmem_release_smi_region(data);
+
+	return 0;
+}
+
+static struct ion_cp_heap_pdata cp_mm_ion_pdata = {
+	.permission_type = IPT_TYPE_MM_CARVEOUT,
+	.align = PAGE_SIZE,
+	.request_region = request_smi_region,
+	.release_region = release_smi_region,
+	.setup_region = pmem_setup_smi_region,
+};
+
+static struct ion_cp_heap_pdata cp_wb_ion_pdata = {
+	.permission_type = IPT_TYPE_MDP_WRITEBACK,
+	.align = PAGE_SIZE,
+};
+
+static struct ion_co_heap_pdata fw_co_ion_pdata = {
+	.adjacent_mem_id = ION_CP_MM_HEAP_ID,
+	.align = SZ_128K,
+};
+
+static struct ion_co_heap_pdata co_ion_pdata = {
+	.adjacent_mem_id = INVALID_HEAP_ID,
+	.align = PAGE_SIZE,
+};
+
+#endif
+static struct ion_platform_data ion_pdata = {
+	.nr = MSM_ION_HEAP_NUM,
+	.heaps = {
+		{
+			.id	= ION_SYSTEM_HEAP_ID,
+			.type	= ION_HEAP_TYPE_SYSTEM,
+			.name	= ION_VMALLOC_HEAP_NAME,
+		},
+		{
+			.id	= ION_CP_MM_HEAP_ID,
+			.type	= ION_HEAP_TYPE_CP,
+			.name	= ION_MM_HEAP_NAME,
+			.base	= MSM_ION_MM_BASE,
+			.size	= MSM_ION_MM_SIZE,
+			.memory_type = ION_SMI_TYPE,
+			.extra_data = (void *) &cp_mm_ion_pdata,
+		},
+		{
+			.id	= ION_MM_FIRMWARE_HEAP_ID,
+			.type	= ION_HEAP_TYPE_CARVEOUT,
+			.name	= ION_MM_FIRMWARE_HEAP_NAME,
+			.base	= MSM_ION_MM_FW_BASE,
+			.size	= MSM_ION_MM_FW_SIZE,
+			.memory_type = ION_SMI_TYPE,
+			.extra_data = (void *) &fw_co_ion_pdata,
+		},
+		{
+			.id	= ION_SF_HEAP_ID,
+			.type	= ION_HEAP_TYPE_CARVEOUT,
+			.name	= ION_SF_HEAP_NAME,
+			.base	= MSM_ION_SF_BASE,
+			.size	= MSM_ION_SF_SIZE,
+			.memory_type = ION_EBI_TYPE,
+			.extra_data = (void *) &co_ion_pdata,
+		},
+		{
+			.id	= ION_CP_WB_HEAP_ID,
+			.type	= ION_HEAP_TYPE_CP,
+			.name	= ION_WB_HEAP_NAME,
+			.base	= MSM_ION_WB_BASE,
+			.size	= MSM_ION_WB_SIZE,
+			.memory_type = ION_EBI_TYPE,
+			.extra_data = (void *) &cp_wb_ion_pdata,
+		},
+#endif
+	}
+};
+
+static struct platform_device ion_dev = {
+	.name = "ion-msm",
+	.id = 1,
+	.dev = { .platform_data = &ion_pdata },
+};
+#endif
+
+>>>>>>> 20e2e47... pyramid: ION: rebase off of sultan's updated heaps
 #ifdef CONFIG_FB_MSM_HDMI_MSM_PANEL
 static struct resource hdmi_msm_resources[] = {
 	{
@@ -2091,6 +2210,7 @@ static struct platform_device android_pmem_smipool_device = {
 	.id = 7,
 	.dev = { .platform_data = &android_pmem_smipool_pdata },
 };
+<<<<<<< HEAD
 #endif
 
 static void __init msm8x60_allocate_memory_regions(void)
@@ -2102,6 +2222,20 @@ static void __init msm8x60_allocate_memory_regions(void)
 	msm_fb_resources[0].end = msm_fb_resources[0].start + size - 1;
 	pr_info("allocating %lu bytes at 0x%p (0x%lx physical) for fb\n",
 		size, __va(MSM_FB_BASE), (unsigned long) MSM_FB_BASE);
+=======
+
+static void __init msm8x60_allocate_memory_regions(void)
+{
+	void *addr;
+	unsigned long size;
+
+	size = MSM_FB_SIZE;
+	addr = alloc_bootmem_align(size, 0x1000);
+	msm_fb_resources[0].start = __pa(addr);
+	msm_fb_resources[0].end = msm_fb_resources[0].start + size - 1;
+	pr_info("allocating %lu bytes at %p (%lx physical) for fb\n",
+			size, addr, __pa(addr));
+>>>>>>> 20e2e47... pyramid: ION: rebase off of sultan's updated heaps
 
 #ifdef CONFIG_FB_MSM_OVERLAY_WRITEBACK
 	size = MSM_FB_WRITEBACK_SIZE;
@@ -3363,8 +3497,11 @@ static struct platform_device *pyramid_devices[] __initdata = {
 #ifndef CONFIG_MSM_MULTIMEDIA_USE_ION
 	&android_pmem_device,
 	&android_pmem_adsp_device,
+<<<<<<< HEAD
 	&android_pmem_adsp2_device,
 #endif
+=======
+>>>>>>> 20e2e47... pyramid: ION: rebase off of sultan's updated heaps
 	&android_pmem_audio_device,
 	&android_pmem_smipool_device,
 #endif
@@ -3432,6 +3569,12 @@ static struct platform_device *pyramid_devices[] __initdata = {
 #ifdef CONFIG_BT
 	&pyramid_rfkill,
 #endif
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ION_MSM
+	&ion_dev,
+#endif
+>>>>>>> 20e2e47... pyramid: ION: rebase off of sultan's updated heaps
 	&pm8058_leds,
 	&msm8660_device_watchdog,
 };
@@ -3454,15 +3597,27 @@ static struct memtype_reserve msm8x60_reserve_table[] __initdata = {
 		.start	=	USER_SMI_BASE,
 		.limit	=	USER_SMI_SIZE,
 		.flags	=	MEMTYPE_FLAGS_FIXED,
+<<<<<<< HEAD
+=======
+	},
+	[MEMTYPE_SMI_ION] = {
+		.start	=	MSM_ION_MM_BASE,
+		.limit	=	MSM_ION_MM_SIZE,
+		.flags	=	MEMTYPE_FLAGS_FIXED,
+>>>>>>> 20e2e47... pyramid: ION: rebase off of sultan's updated heaps
 	},
 	[MEMTYPE_EBI0] = {
 		.flags	=	MEMTYPE_FLAGS_1M_ALIGN,
 	},
 	[MEMTYPE_EBI1] = {
+<<<<<<< HEAD
 		.start	=	MSM_PMEM_KERNEL_EBI1_BASE,
 		.limit	=	MSM_PMEM_KERNEL_EBI1_SIZE,
 		.size	=	MSM_PMEM_KERNEL_EBI1_SIZE,
 		.flags	= 	MEMTYPE_FLAGS_FIXED,
+=======
+		.flags	=	MEMTYPE_FLAGS_1M_ALIGN,
+>>>>>>> 20e2e47... pyramid: ION: rebase off of sultan's updated heaps
 	},
 };
 
@@ -3489,6 +3644,12 @@ static void __init size_pmem_devices(void)
 #endif
 }
 
+#ifdef CONFIG_ION_MSM
+static void __init reserve_ion_memory(void)
+{
+}
+#endif
+
 #ifdef CONFIG_ANDROID_PMEM
 static void __init reserve_memory_for(struct android_pmem_platform_data *p)
 {
@@ -3514,15 +3675,24 @@ static void __init reserve_pmem_memory(void)
 	reserve_memory_for(&android_pmem_audio_pdata);
 #endif
 }
+<<<<<<< HEAD
 
 static void __init msm8x60_calculate_reserve_sizes(void)
 {
 #ifdef CONFIG_ION_MSM
 	pyramid_ion_reserve_memory(msm8x60_reserve_table);
 #endif
+=======
+>>>>>>> 20e2e47... pyramid: ION: rebase off of sultan's updated heaps
 
 	size_pmem_devices();
 	reserve_pmem_memory();
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ION_MSM
+	reserve_ion_memory();
+#endif
+>>>>>>> 20e2e47... pyramid: ION: rebase off of sultan's updated heaps
 }
 
 static int msm8x60_paddr_to_memtype(unsigned int paddr)
@@ -6222,6 +6392,9 @@ static void __init msm8x60_init(struct msm_board_data *board_data)
 
 #ifdef CONFIG_CPU_FREQ_GOV_ONDEMAND_2_PHASE
 	set_two_phase_freq(1134000);
+#endif
+#ifdef CONFIG_CPU_FREQ_GOV_INTELLIDEMAND
+	id_set_two_phase_freq(1134000);
 #endif
 
 	msm8x60_init_tlmm();

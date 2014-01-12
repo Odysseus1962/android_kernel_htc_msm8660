@@ -32,11 +32,16 @@
 #define QCE_0_BASE		0x18500000
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
 #define MSM_FB_PRIM_BUF_SIZE (960 * ALIGN(540, 32) * 4 * 3) /* 4 bpp x 3 pages */
 #else
 #define MSM_FB_PRIM_BUF_SIZE (960 * ALIGN(540, 32) * 4 * 2) /* 4 bpp x 2 pages */
 #endif
+=======
+/*** Memory map ***/
+#define MSM_ION_HEAP_NUM      5
+>>>>>>> 20e2e47... pyramid: ION: rebase off of sultan's updated heaps
 
 #ifdef CONFIG_FB_MSM_HDMI_MSM_PANEL
 #define MSM_FB_EXT_BUF_SIZE  (1920 * 1080 * 2 * 1) /* 2 bpp x 1 page */
@@ -62,6 +67,7 @@
 #define MSM_PMEM_AUDIO_SIZE	0x239000
 #define MSM_PMEM_KERNEL_EBI1_SIZE	0xC7000
 
+<<<<<<< HEAD
 #define MSM_FB_WRITEBACK_BASE	(0x45C00000)
 #define MSM_PMEM_AUDIO_BASE	(0x46400000)
 #define MSM_PMEM_ADSP_BASE	(0x40400000)
@@ -72,6 +78,15 @@
 
 #define MSM_SMI_BASE          0x38000000
 #define MSM_SMI_SIZE          0x4000000
+=======
+// ION SMI
+#define MSM_ION_MM_SIZE       0x3500000
+
+// ION
+#define MSM_ION_WB_SIZE       0x800000
+#define MSM_ION_SF_SIZE       0x29A0000
+#define MSM_ION_MM_FW_SIZE    0x200000
+>>>>>>> 20e2e47... pyramid: ION: rebase off of sultan's updated heaps
 
 /* Kernel SMI PMEM Region for video core, used for Firmware */
 /* and encoder,decoder scratch buffers */
@@ -86,10 +101,24 @@
 #define USER_SMI_BASE         (KERNEL_SMI_BASE + KERNEL_SMI_SIZE)
 #define USER_SMI_SIZE         (MSM_SMI_SIZE - KERNEL_SMI_SIZE)
 #define MSM_PMEM_SMIPOOL_BASE USER_SMI_BASE
+<<<<<<< HEAD
 #define MSM_PMEM_SMIPOOL_SIZE USER_SMI_SIZE
 
 #define PHY_BASE_ADDR1  0x48000000
 #define SIZE_ADDR1      0x25600000
+=======
+#define MSM_ION_SF_BASE       (0x40400000)
+#define MSM_PMEM_AUDIO_BASE   (0x46400000)
+#define MSM_ION_WB_BASE       (0x6A900000)
+#define MSM_ION_MM_FW_BASE    (0x6B100000)
+#define MSM_ION_MM_BASE       (0x6B300000)
+#define MSM_PMEM_ADSP_BASE    (0x6E800000)
+
+// Userspace allocation
+#define PHY_BASE_ADDR1  0x48000000
+#define SIZE_ADDR1      0x22900000
+/*** END Memory map ***/
+>>>>>>> 20e2e47... pyramid: ION: rebase off of sultan's updated heaps
 
 /* GPIO definition */
 
