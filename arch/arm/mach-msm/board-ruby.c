@@ -2747,29 +2747,6 @@ void *pmem_setup_smi_region(void)
 #ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
 static int request_smi_region(void *data)
 {
-        int bus_id = (int) data;
-
-        msm_bus_scale_client_update_request(bus_id, 1);
-        return 0;
-}
-
-int release_smi_region(void *data)
-{
-        int bus_id = (int) data;
-
-        msm_bus_scale_client_update_request(bus_id, 0);
-        return 0;
-}
-
-void *setup_smi_region(void)
-{
-        return (void *)msm_bus_scale_register_client(&smi_client_pdata);
-}
-
-#ifdef CONFIG_ION_MSM
-#ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
-static int request_smi_region(void *data)
-{
         pmem_request_smi_region(data);
 
         return 0;
