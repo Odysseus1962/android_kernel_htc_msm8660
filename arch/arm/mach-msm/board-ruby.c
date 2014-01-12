@@ -2743,19 +2743,54 @@ void *pmem_setup_smi_region(void)
 	return (void *)msm_bus_scale_register_client(&smi_client_pdata);
 }
 
+int request_smi_region(void *data)
+{
+        int bus_id = (int) data;
+
+        msm_bus_scale_client_update_request(bus_id, 1);
+        return 0;
+}
+
+int release_smi_region(void *data)
+{
+        int bus_id = (int) data;
+
+        msm_bus_scale_client_update_request(bus_id, 0);
+        return 0;
+}
+
+void *setup_smi_region(void)
+{
+        return (void *)msm_bus_scale_register_client(&smi_client_pdata);
+}
+
 #ifdef CONFIG_ION_MSM
 #ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
-static struct ion_cp_heap_pdata cp_wb_ion_pdata = {
-	.permission_type = IPT_TYPE_MDP_WRITEBACK,
-	.align = PAGE_SIZE,
-};
-
 static struct ion_co_heap_pdata co_ion_pdata = {
 	.adjacent_mem_id = INVALID_HEAP_ID,
 	.align = PAGE_SIZE,
 };
 
+static struct ion_cp_heap_pdata cp_mm_ion_pdata = {
+	.permission_type = IPT_TYPE_MM_CARVEOUT,
+	.align = PAGE_SIZE,
+	.request_region = request_smi_region,
+	.release_region = release_smi_region,
+	.setup_region = setup_smi_region,
+};
+
+static struct ion_cp_heap_pdata cp_wb_ion_pdata = {
+	.permission_type = IPT_TYPE_MDP_WRITEBACK,
+	.align = PAGE_SIZE,
+};
+
 #endif
+
+/*
+ * These heaps are listed in the order they will be allocated.
+ * Don't swap the order unless you know what you are doing!
+ */
+
 static struct ion_platform_data ion_pdata = {
 	.nr = MSM_ION_HEAP_NUM,
 	.heaps = {
@@ -2765,22 +2800,31 @@ static struct ion_platform_data ion_pdata = {
 			.name	= ION_VMALLOC_HEAP_NAME,
 		},
 		{
+			.id  = ION_CP_MM_HEAP_ID,
+			.type  = ION_HEAP_TYPE_CP,
+			.name  = ION_MM_HEAP_NAME,
+			.base  = MSM_ION_MM_BASE,
+			.size  = MSM_ION_MM_SIZE,
+			.memory_type  = ION_SMI_TYPE,
+			.extra_data  = (void *) &cp_mm_ion_pdata,
+		},
+		{
 			.id	= ION_SF_HEAP_ID,
 			.type	= ION_HEAP_TYPE_CARVEOUT,
 			.name	= ION_SF_HEAP_NAME,
-//			.base	= MSM_ION_SF_BASE,
+			.base	= MSM_ION_SF_BASE,
 			.size	= MSM_ION_SF_SIZE,
-			.memory_type = ION_EBI_TYPE,
-			.extra_data = (void *) &co_ion_pdata,
+			.memory_type  = ION_EBI_TYPE,
+			.extra_data  = (void *)&co_ion_pdata,
 		},
 		{
 			.id	= ION_CP_WB_HEAP_ID,
 			.type	= ION_HEAP_TYPE_CP,
-			.name	= ION_WB_HEAP_NAME,
 			.base	= MSM_ION_WB_BASE,
+			.name  = ION_WB_HEAP_NAME,
 			.size	= MSM_ION_WB_SIZE,
-			.memory_type = ION_EBI_TYPE,
-			.extra_data = (void *) &cp_wb_ion_pdata,
+			.memory_type  = ION_EBI_TYPE,
+			.extra_data  = (void *) &cp_wb_ion_pdata,
 		},
 #endif
 	}
@@ -7156,6 +7200,12 @@ static struct memtype_reserve msm8x60_reserve_table[] __initdata = {
 		.limit	=	USER_SMI_SIZE,
 		.flags	=	MEMTYPE_FLAGS_FIXED,
 	},
+
+	[MEMTYPE_SMI_ION] = {
+		.start  = MSM_SMI_ION_BASE,
+ 		.limit  = MSM_SMI_ION_SIZE,
+ 		.flags  = MEMTYPE_FLAGS_FIXED,
+ 	},
 	[MEMTYPE_EBI0] = {
 		.flags	=	MEMTYPE_FLAGS_1M_ALIGN,
 	},
@@ -7188,9 +7238,7 @@ static void __init size_pmem_devices(void)
 #ifdef CONFIG_ION_MSM
 static void __init reserve_ion_memory(void)
 {
-#ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
-	msm8x60_reserve_table[MEMTYPE_EBI1].size += MSM_ION_SF_SIZE;
-#endif
+// nothing is here
 }
 #endif
 
@@ -7227,7 +7275,7 @@ static void __init msm8x60_calculate_reserve_sizes(void)
 
 static int msm8x60_paddr_to_memtype(phys_addr_t paddr)
 {
-	if (paddr >= 0x40000000 && paddr < 0x60000000)
+	if (paddr >= 0x40000000 && paddr < 0x80000000)
 		return MEMTYPE_EBI1;
 	if (paddr >= 0x38000000 && paddr < 0x40000000)
 		return MEMTYPE_SMI;
