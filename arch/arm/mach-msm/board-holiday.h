@@ -60,6 +60,7 @@
 // PMEM SMI
 #define MSM_SMI_SIZE          0x4000000
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 #define KERNEL_SMI_BASE       (MSM_SMI_BASE)
 #define KERNEL_SMI_SIZE       0x400000
@@ -68,6 +69,9 @@
 =======
 #define KERNEL_SMI_SIZE       0x600000
 >>>>>>> 2a397c7... holiday: ION: rebase and cleanup.
+=======
+#define KERNEL_SMI_SIZE       0xE00000
+>>>>>>> 18669ef... holiday: increase PMEM SMI size
 #define USER_SMI_SIZE         (MSM_SMI_SIZE - KERNEL_SMI_SIZE)
 #define MSM_PMEM_SMIPOOL_SIZE USER_SMI_SIZE
 
