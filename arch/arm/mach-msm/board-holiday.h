@@ -148,10 +148,14 @@
 // Userspace allocation
 #define PHY_BASE_ADDR1  0x48000000
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define SIZE_ADDR1        0x34600000
 =======
 #define SIZE_ADDR1      0x32900000
 //#define SIZE_ADDR1      0x2B300000
+=======
+#define SIZE_ADDR1      0x32000000
+>>>>>>> 243c843... holiday: correct userspace memory allocation after PMEM SMI increase
 /*** END Memory map ***/
 >>>>>>> 2a397c7... holiday: ION: rebase and cleanup.
 
