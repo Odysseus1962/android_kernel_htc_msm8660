@@ -2743,7 +2743,9 @@ void *pmem_setup_smi_region(void)
 	return (void *)msm_bus_scale_register_client(&smi_client_pdata);
 }
 
-int request_smi_region(void *data)
+#ifdef CONFIG_ION_MSM
+#ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
+static int request_smi_region(void *data)
 {
         int bus_id = (int) data;
 
@@ -2766,74 +2768,96 @@ void *setup_smi_region(void)
 
 #ifdef CONFIG_ION_MSM
 #ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
-static struct ion_co_heap_pdata co_ion_pdata = {
-	.adjacent_mem_id = INVALID_HEAP_ID,
-	.align = PAGE_SIZE,
-};
+static int request_smi_region(void *data)
+{
+        pmem_request_smi_region(data);
+
+        return 0;
+}
+
+static int release_smi_region(void *data)
+{
+        pmem_release_smi_region(data);
+
+        return 0;
+}
 
 static struct ion_cp_heap_pdata cp_mm_ion_pdata = {
-	.permission_type = IPT_TYPE_MM_CARVEOUT,
-	.align = PAGE_SIZE,
-	.request_region = request_smi_region,
-	.release_region = release_smi_region,
-	.setup_region = setup_smi_region,
+        .permission_type = IPT_TYPE_MM_CARVEOUT,
+        .align = PAGE_SIZE,
+        .request_region = request_smi_region,
+        .release_region = release_smi_region,
+        .setup_region = pmem_setup_smi_region,
 };
 
 static struct ion_cp_heap_pdata cp_wb_ion_pdata = {
-	.permission_type = IPT_TYPE_MDP_WRITEBACK,
-	.align = PAGE_SIZE,
+        .permission_type = IPT_TYPE_MDP_WRITEBACK,
+        .align = PAGE_SIZE,
+};
+
+static struct ion_co_heap_pdata fw_co_ion_pdata = {
+        .adjacent_mem_id = ION_CP_MM_HEAP_ID,
+        .align = SZ_128K,
+};
+
+static struct ion_co_heap_pdata co_ion_pdata = {
+        .adjacent_mem_id = INVALID_HEAP_ID,
+        .align = PAGE_SIZE,
 };
 
 #endif
-
-/*
- * These heaps are listed in the order they will be allocated.
- * Don't swap the order unless you know what you are doing!
- */
-
 static struct ion_platform_data ion_pdata = {
-	.nr = MSM_ION_HEAP_NUM,
-	.heaps = {
-		{
-			.id	= ION_SYSTEM_HEAP_ID,
-			.type	= ION_HEAP_TYPE_SYSTEM,
-			.name	= ION_VMALLOC_HEAP_NAME,
-		},
-		{
-			.id  = ION_CP_MM_HEAP_ID,
-			.type  = ION_HEAP_TYPE_CP,
-			.name  = ION_MM_HEAP_NAME,
-			.base  = MSM_ION_MM_BASE,
-			.size  = MSM_ION_MM_SIZE,
-			.memory_type  = ION_SMI_TYPE,
-			.extra_data  = (void *) &cp_mm_ion_pdata,
-		},
-		{
-			.id	= ION_SF_HEAP_ID,
-			.type	= ION_HEAP_TYPE_CARVEOUT,
-			.name	= ION_SF_HEAP_NAME,
-			.base	= MSM_ION_SF_BASE,
-			.size	= MSM_ION_SF_SIZE,
-			.memory_type  = ION_EBI_TYPE,
-			.extra_data  = (void *)&co_ion_pdata,
-		},
-		{
-			.id	= ION_CP_WB_HEAP_ID,
-			.type	= ION_HEAP_TYPE_CP,
-			.base	= MSM_ION_WB_BASE,
-			.name  = ION_WB_HEAP_NAME,
-			.size	= MSM_ION_WB_SIZE,
-			.memory_type  = ION_EBI_TYPE,
-			.extra_data  = (void *) &cp_wb_ion_pdata,
-		},
+        .nr = MSM_ION_HEAP_NUM,
+        .heaps = {
+                {
+                        .id        = ION_SYSTEM_HEAP_ID,
+                        .type        = ION_HEAP_TYPE_SYSTEM,
+                        .name        = ION_VMALLOC_HEAP_NAME,
+                },
+                {
+                        .id        = ION_CP_MM_HEAP_ID,
+                        .type        = ION_HEAP_TYPE_CP,
+                        .name        = ION_MM_HEAP_NAME,
+                        .base        = MSM_ION_MM_BASE,
+                        .size        = MSM_ION_MM_SIZE,
+                        .memory_type = ION_SMI_TYPE,
+                        .extra_data = (void *) &cp_mm_ion_pdata,
+                },
+                {
+                        .id        = ION_MM_FIRMWARE_HEAP_ID,
+                        .type        = ION_HEAP_TYPE_CARVEOUT,
+                        .name        = ION_MM_FIRMWARE_HEAP_NAME,
+                        .base        = MSM_ION_MM_FW_BASE,
+                        .size        = MSM_ION_MM_FW_SIZE,
+                        .memory_type = ION_SMI_TYPE,
+                        .extra_data = (void *) &fw_co_ion_pdata,
+                },
+                {
+                        .id        = ION_SF_HEAP_ID,
+                        .type        = ION_HEAP_TYPE_CARVEOUT,
+                        .name        = ION_SF_HEAP_NAME,
+                        .base        = MSM_ION_SF_BASE,
+                        .size        = MSM_ION_SF_SIZE,
+                        .memory_type = ION_EBI_TYPE,
+                        .extra_data = (void *) &co_ion_pdata,
+                },
+                {
+                        .id        = ION_CP_WB_HEAP_ID,
+                        .type        = ION_HEAP_TYPE_CP,
+                        .name        = ION_WB_HEAP_NAME,
+                        .base        = MSM_ION_WB_BASE,
+                        .size        = MSM_ION_WB_SIZE,
+                        .memory_type = ION_EBI_TYPE,
+                        .extra_data = (void *) &cp_wb_ion_pdata,
+                },
 #endif
-	}
+        }
 };
 
 static struct platform_device ion_dev = {
-	.name = "ion-msm",
-	.id = 1,
-	.dev = { .platform_data = &ion_pdata },
+        .name = "ion-msm",
+        .id = 1,
+        .dev = { .platform_data = &ion_pdata },
 };
 #endif
 
@@ -7190,7 +7214,7 @@ static struct memtype_reserve msm8x60_reserve_table[] __initdata = {
         [MEMTYPE_SMI_KERNEL] = {
                 .start        =        KERNEL_SMI_BASE,
                 .limit        =        KERNEL_SMI_SIZE,
-                .size        =        KERNEL_SMI_SIZE,
+                .size         =        KERNEL_SMI_SIZE,
                 .flags        =        MEMTYPE_FLAGS_FIXED,
         },
         /* User space SMI memory pool for video core */
@@ -7201,9 +7225,9 @@ static struct memtype_reserve msm8x60_reserve_table[] __initdata = {
                 .flags        =        MEMTYPE_FLAGS_FIXED,
         },
         [MEMTYPE_SMI_ION] = {
-                .start  = MSM_SMI_ION_BASE,
-                .limit  = MSM_SMI_ION_SIZE,
-                .flags  = MEMTYPE_FLAGS_FIXED,
+                .start        =        MSM_ION_MM_BASE,
+                .limit        =        MSM_ION_MM_SIZE,
+                .flags        =        MEMTYPE_FLAGS_FIXED,
         },
         [MEMTYPE_EBI0] = {
                 .flags        =        MEMTYPE_FLAGS_1M_ALIGN,
@@ -7212,6 +7236,7 @@ static struct memtype_reserve msm8x60_reserve_table[] __initdata = {
                 .flags        =        MEMTYPE_FLAGS_1M_ALIGN,
         },
 };
+
 
 #ifdef CONFIG_ANDROID_PMEM
 static void __init size_pmem_device(struct android_pmem_platform_data *pdata, unsigned long start, unsigned long size)
