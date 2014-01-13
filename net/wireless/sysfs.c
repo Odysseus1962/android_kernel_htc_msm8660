@@ -93,8 +93,7 @@ static int wiphy_suspend(struct device *dev, pm_message_t state)
 
 	if (rdev->ops->suspend) {
 		rtnl_lock();
-		if (rdev->wiphy.registered)
-			ret = rdev->ops->suspend(&rdev->wiphy, rdev->wowlan);
+		ret = rdev->ops->suspend(&rdev->wiphy, rdev->wowlan);
 		rtnl_unlock();
 	}
 
@@ -113,22 +112,19 @@ static int wiphy_resume(struct device *dev)
 
 	if (rdev->ops->resume) {
 		rtnl_lock();
-		if (rdev->wiphy.registered)
-			ret = rdev->ops->resume(&rdev->wiphy);
+		ret = rdev->ops->resume(&rdev->wiphy);
 		rtnl_unlock();
 	}
 
 	return ret;
 }
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35))
 static const void *wiphy_namespace(struct device *d)
 {
 	struct wiphy *wiphy = container_of(d, struct wiphy, dev);
 
 	return wiphy_net(wiphy);
 }
-#endif
 
 struct class ieee80211_class = {
 	.name = "ieee80211",
@@ -140,10 +136,8 @@ struct class ieee80211_class = {
 #endif
 	.suspend = wiphy_suspend,
 	.resume = wiphy_resume,
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35))
 	.ns_type = &net_ns_type_operations,
 	.namespace = wiphy_namespace,
-#endif
 };
 
 int wiphy_sysfs_init(void)

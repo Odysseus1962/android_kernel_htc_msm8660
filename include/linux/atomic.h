@@ -1,12 +1,5 @@
-#ifndef _COMPAT_LINUX_ATOMIC_H
-#define _COMPAT_LINUX_ATOMIC_H 1
-
-#include <linux/version.h>
-
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(2,6,36))
-#include_next <linux/atomic.h>
-#else
-
+#ifndef _LINUX_ATOMIC_H
+#define _LINUX_ATOMIC_H
 #include <asm/atomic.h>
 
 /**
@@ -41,6 +34,17 @@ static inline int atomic_inc_not_zero_hint(atomic_t *v, int hint)
 }
 #endif
 
-#endif /* (LINUX_VERSION_CODE > KERNEL_VERSION(2,6,36)) */
+#ifndef CONFIG_ARCH_HAS_ATOMIC_OR
+static inline void atomic_or(int i, atomic_t *v)
+{
+	int old;
+	int new;
 
-#endif	/* _COMPAT_LINUX_ATOMIC_H */
+	do {
+		old = atomic_read(v);
+		new = old | i;
+	} while (atomic_cmpxchg(v, old, new) != old);
+}
+#endif /* #ifndef CONFIG_ARCH_HAS_ATOMIC_OR */
+
+#endif /* _LINUX_ATOMIC_H */
