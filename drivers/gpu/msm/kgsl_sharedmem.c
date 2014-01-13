@@ -11,7 +11,7 @@
  *
  */
 
-#include <linux/export.h>
+#include <linux/module.h>
 #include <linux/vmalloc.h>
 #include <linux/memory_alloc.h>
 #include <asm/cacheflush.h>

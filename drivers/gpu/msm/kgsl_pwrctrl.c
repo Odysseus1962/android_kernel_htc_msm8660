@@ -11,7 +11,7 @@
  *
  */
 
-#include <linux/export.h>
+#include <linux/module.h>
 #include <linux/interrupt.h>
 #include <asm/page.h>
 #include <linux/pm_runtime.h>
