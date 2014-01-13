@@ -1,3 +1,7 @@
+#include <linux/version.h>
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,36))
+#include_next <linux/kfifo.h>
+#else
 /*
  * A generic kernel FIFO implementation
  *
@@ -850,3 +854,4 @@ extern unsigned int __kfifo_out_peek_r(struct __kfifo *fifo,
 extern unsigned int __kfifo_max_r(unsigned int len, size_t recsize);
 
 #endif
+#endif /* (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,36)) */
