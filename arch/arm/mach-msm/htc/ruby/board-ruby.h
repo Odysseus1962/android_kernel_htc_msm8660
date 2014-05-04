@@ -149,6 +149,7 @@
 #define RUBY_CAM_I2C_SDA		(47)
 #define RUBY_CAM_I2C_SCL		(48)
 #define RUBY_CLK_SWITCH			(18)
+#define RUBY_CAM_VCM_PD			(58)
 #define RUBY_CAM1_RST			(49)
 #define RUBY_CAM1_VCM_PD		(19)
 #define RUBY_CAM2_RST			(101)

@@ -393,6 +393,38 @@ static void ruby_config_camera_off_gpios(void)
 		ARRAY_SIZE(camera_off_gpio_table));
 }
 
+DEFINE_MUTEX(vcm_workaround_vreg_mut);
+
+#ifdef VCM_WORKAROUND
+DEFINE_MUTEX(vcm_workaround_camrun_mut);
+
+#if 0
+int s5k3h2yx_vcm_workaround(int on_off);
+
+int Ruby_camera_vcm_workaround(int on_off)
+{
+	return s5k3h2yx_vcm_workaround(on_off);
+}
+#endif
+
+static int g_camera_running = 0;
+void vcm_workaround_set_camera_running(int isRunning)
+{
+	mutex_lock(&vcm_workaround_camrun_mut);
+	g_camera_running = isRunning;
+	mutex_unlock(&vcm_workaround_camrun_mut);
+}
+
+int vcm_workaround_get_camera_running(void)
+{
+	int isRunning = 0;
+	mutex_lock(&vcm_workaround_camrun_mut);
+	isRunning = g_camera_running;
+	mutex_unlock(&vcm_workaround_camrun_mut);
+	return isRunning;
+}
+#endif
+
 #ifdef CONFIG_S5K3H2YX
 static int camera_vreg_on = 0;
 static int Ruby_sensor_vreg_on(void)
