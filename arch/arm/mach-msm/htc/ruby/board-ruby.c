@@ -2768,9 +2768,9 @@ static void __init ruby_init(void)
 	msm8x60_init_uart12dm();
 	ruby_init_mmc();
 
-#ifdef CONFIG_MSM_CAMERA
-        ruby_init_cam();
-#endif
+//#ifdef CONFIG_MSM_CAMERA
+//        ruby_init_cam();
+//#endif
 
 	/* Accessory */
 	pr_info("[HS_BOARD] (%s) MFG_BUILD=%d, FLAG=%lu\n", __func__,

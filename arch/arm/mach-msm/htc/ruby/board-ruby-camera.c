@@ -360,12 +360,12 @@ static uint32_t camera_on_gpio_table[] = {
 	GPIO_CFG(RUBY_CAM1_CAM_ID, 0, GPIO_CFG_INPUT, GPIO_CFG_PULL_DOWN, GPIO_CFG_8MA),/* CAM1_CAM_ID */
 };
 
-#ifdef CONFIG_S5K3H2YX
-static uint32_t camera_on_gpio_table_workaround[] = {
-        GPIO_CFG(RUBY_CAM_I2C_SDA, 1, GPIO_CFG_OUTPUT, GPIO_CFG_PULL_DOWN, GPIO_CFG_8MA), /* CAM_I2C_SDA */
-        GPIO_CFG(RUBY_CAM_I2C_SCL, 1, GPIO_CFG_OUTPUT, GPIO_CFG_PULL_DOWN, GPIO_CFG_8MA), /* CAM_I2C_SCL */
-};
-#endif
+//#ifdef CONFIG_S5K3H2YX
+//static uint32_t camera_on_gpio_table_workaround[] = {
+//        GPIO_CFG(RUBY_CAM_I2C_SDA, 1, GPIO_CFG_OUTPUT, GPIO_CFG_PULL_DOWN, GPIO_CFG_8MA), /* CAM_I2C_SDA */
+//        GPIO_CFG(RUBY_CAM_I2C_SCL, 1, GPIO_CFG_OUTPUT, GPIO_CFG_PULL_DOWN, GPIO_CFG_8MA), /* CAM_I2C_SCL */
+//};
+//#endif
 
 static void config_gpio_table(uint32_t *table, int len)
 {
@@ -380,6 +380,7 @@ static void config_gpio_table(uint32_t *table, int len)
 	}
 }
 
+#define GPIO_CAM_EN (GPIO_EXPANDER_GPIO_BASE + 13)
 static int ruby_config_camera_on_gpios(void)
 {
 	config_gpio_table(camera_on_gpio_table,
@@ -471,6 +472,7 @@ static int Ruby_sensor_vreg_on(void)
 
 by_pass_vreg_on :
 	mutex_unlock(&vcm_workaround_vreg_mut);
+	ruby_config_camera_on_gpios();
 
 	return rc;
 }
@@ -517,6 +519,7 @@ static int Ruby_sensor_vreg_off(void)
 by_pass_vreg_off :
 	mutex_unlock(&vcm_workaround_vreg_mut);
 	Ruby_maincam_clk_switch();
+	ruby_config_camera_off_gpios();
 
 	return rc;
 }
