@@ -1,4 +1,5 @@
 obj-$(CONFIG_MACH_RUBY) += board-ruby.o
+obj-$(CONFIG_MACH_RUBY) += board-ruby-camera.o
 obj-$(CONFIG_MACH_RUBY) += board-ruby-gpiomux.o
 obj-$(CONFIG_MACH_RUBY) += board-ruby-keypad.o
 obj-$(CONFIG_MACH_RUBY) += board-ruby-mmc.o
