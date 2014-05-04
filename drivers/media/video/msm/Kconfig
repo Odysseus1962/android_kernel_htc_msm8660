@@ -68,6 +68,13 @@ config S5K6A1GX
 	  Support for S5K6A1GX samsung sensor driver.
 	  It is a Bayer 1.3MP sensor it supports one mipi lanes.
 
+config MT9D015
+	bool "Sensor mt9d015 (Aptina 2M)"
+	depends on MSM_CAMERA && ARCH_MSM8X60
+	default n
+	---help---
+	  Aptina 2M with Autofocus
+
 config S5K3H1GX_ACT
 	bool "Sensor s5k3h1gx actuator"
 	depends on MSM_CAMERA

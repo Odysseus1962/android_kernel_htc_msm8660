@@ -10,6 +10,7 @@ obj-$(CONFIG_IMX105) += imx105_v4l2.o
 obj-$(CONFIG_IMX175) += imx175_v4l2.o
 obj-$(CONFIG_MACH_ELITE) += imx175_2lane_v4l2.o
 obj-$(CONFIG_MACH_JET) += imx175_2lane_v4l2.o
+obj-$(CONFIG_MACH_RUBY) += mt9d015_reg_vigor.o
 obj-$(CONFIG_IMX135) += imx135_v4l2.o
 ifdef CONFIG_CAMERA_IMAGE_NONE_BOARD
 obj-$(CONFIG_OV4688) += ov4688_non_v4l2.o
@@ -36,4 +37,4 @@ obj-$(CONFIG_OV5693) += ov5693_v4l2.o
 obj-$(CONFIG_S5K6A2YA) += s5k6a2ya_v4l2.o
 obj-$(CONFIG_MT9V113) += mt9v113_v4l2.o mt9v113_reg_lens_9251.o
 obj-$(CONFIG_S5K6AAFX) += s5k6aafx_v4l2.o s5k6aafx_reg_valentewx.o
-
+obj-$(CONFIG_MT9D015) += mt9d015.o
