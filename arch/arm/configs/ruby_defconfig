@@ -2371,23 +2371,20 @@ CONFIG_HTC_CAMERA_HAL_VERSION=0
 #
 # Camera Sensor Selection
 #
-# CONFIG_MT9D113 is not set
 # CONFIG_IMX074 is not set
 CONFIG_S5K3H2YX=y
 # CONFIG_S5K6A1GX is not set
+CONFIG_MT9D015=y
 # CONFIG_S5K3H1GX_ACT is not set
 # CONFIG_AR0260 is not set
 # CONFIG_OV2722 is not set
-# CONFIG_OV5640 is not set
 # CONFIG_OV5647 is not set
 # CONFIG_MT9M114 is not set
-# CONFIG_WEBCAM_OV7692 is not set
 # CONFIG_WEBCAM_OV9726 is not set
 # CONFIG_VX6953 is not set
 # CONFIG_MT9E013 is not set
 # CONFIG_IMX074_ACT is not set
 CONFIG_S5K3H2YX_ACT=y
-# CONFIG_QS_S5K4E1 is not set
 # CONFIG_S5K4E1 is not set
 # CONFIG_S5K3H1GX is not set
 # CONFIG_MSM_CAMERA_FLASH_SC628A is not set
